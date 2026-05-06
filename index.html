@@ -385,16 +385,113 @@
         display: block;
       }
 
-      @media (max-width: 768px) {
+      /* =========================================
+         RESPONZIVNÍ DESIGN (iPady a Telefony)
+         ========================================= */
+
+      /* Pro menší tablety a iPady */
+      @media (max-width: 1024px) {
         .grid {
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
           gap: 20px;
         }
-        .card img {
-          height: 200px;
+        .card {
+          padding: 20px;
         }
+        .card img {
+          height: 180px;
+        }
+      }
+
+      /* Pro mobilní telefony */
+      @media (max-width: 768px) {
+        nav {
+          padding: 0.8rem 0.5rem;
+          gap: 5px;
+        }
+        nav a {
+          padding: 8px 12px;
+          font-size: 0.85rem;
+        }
+
+        .hero {
+          padding: 25px 15px;
+        }
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        input[type="text"] {
+          padding: 15px 20px;
+          font-size: 1rem;
+        }
+
+        .grid {
+          /* Dva sloupce na telefonech */
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 15px;
+          padding: 10px 0;
+        }
+        .card {
+          padding: 15px;
+          border-radius: 15px;
+        }
+        .card img {
+          height: 120px;
+          margin-bottom: 10px;
+        }
+        .card h3 {
+          font-size: 1.1rem;
+          margin: 5px 0;
+        }
+        .card .formula {
+          font-size: 1rem;
+        }
+
+        .group-header {
+          font-size: 1.15rem;
+          margin: 30px 0 10px;
+        }
+
+        .accordion-container {
+          gap: 15px;
+        }
+
+        .practice-section {
+          padding: 20px 15px;
+          margin-top: 40px;
+        }
+        .practice-btn-group {
+          flex-direction: column;
+          gap: 10px;
+        }
+        .practice-btn {
+          width: 100%;
+          padding: 14px;
+          font-size: 1.05rem;
+        }
+        #practiceContainer iframe {
+          min-height: 500px;
+        }
+
+        /* Modal úpravy pro malé obrazovky */
         .modal-content {
-          padding: 25px;
+          width: 95%;
+          max-height: 90vh;
+          overflow-y: auto;
+          margin: 5vh auto;
+          padding: 40px 20px 20px 20px;
+          border-radius: 20px;
+        }
+        .close-btn {
+          top: 5px;
+          right: 15px;
+          font-size: 35px;
+        }
+        #modalBody img {
+          margin: 0 auto 15px;
+          max-width: 100%;
+          border-radius: 15px;
         }
       }
     </style>
@@ -3729,6 +3826,7 @@
       // FUNKCE PRO PROCVIČOVÁNÍ
       function showPractice(type) {
         const container = document.getElementById("practiceContainer");
+        // Přidána responzivní třída k iframe
         if (type === "biochem") {
           container.innerHTML =
             '<iframe src="https://quizlet.com/1160902391/flashcards/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
@@ -3736,8 +3834,9 @@
           container.innerHTML =
             '<iframe src="https://quizlet.com/1160912337/flashcards/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
         } else if (type === "inorganic") {
+          // Změněný odkaz na anorganiku přesně podle tvého přání
           container.innerHTML =
-            '<iframe src="<iframe src="https://quizlet.com/1160920667/match/embed?i=2nph8c&x=1jj1" height="500" width="100%" style="border:0"></iframe>';
+            '<iframe src="https://quizlet.com/1160920667/match/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
         }
       }
 
