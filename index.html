@@ -1,0 +1,3750 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChemMed Atlas | Medicína</title>
+    <style>
+      :root {
+        --primary: #1a73e8;
+        --primary-dark: #1557b0;
+        --bg: #fdfdfd;
+        --card-bg: #ffffff;
+        --text: #2c3e50;
+        --text-light: #7f8c8d;
+        --border: #edf2f7;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        margin: 0;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      nav {
+        background: white;
+        padding: 1rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      nav a {
+        text-decoration: none;
+        color: var(--text);
+        font-weight: 500;
+        padding: 10px 18px;
+        border-radius: 10px;
+        transition: 0.3s;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      nav a:hover,
+      nav a.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 40px 20px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        color: var(--primary);
+        font-weight: 800;
+      }
+
+      .search-wrapper {
+        max-width: 600px;
+        margin: 0 auto 40px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 18px 28px;
+        border-radius: 40px;
+        border: 2px solid var(--border);
+        font-size: 1.1rem;
+        outline: none;
+        box-shadow: var(--shadow);
+        transition: 0.2s;
+      }
+      input[type="text"]:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 5px rgba(26, 115, 232, 0.15);
+      }
+
+      .accordion-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 25px;
+      }
+
+      .full-width-accordion-wrapper {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .full-width-accordion-wrapper .accordion-item {
+        width: 100%;
+      }
+
+      /* MINIMALISTICKÝ STYL AKORDEONŮ */
+      .accordion-item {
+        border: 1px solid #eaeaea;
+        border-radius: 8px;
+        background: white;
+        overflow: hidden;
+        align-self: start;
+        transition: 0.3s;
+      }
+      .accordion-header {
+        padding: 16px 20px;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: var(--text);
+        font-size: 1.05rem;
+        transition: 0.2s;
+        border-bottom: 1px solid transparent;
+      }
+      .accordion-item.active > .accordion-header {
+        border-bottom-color: var(--border);
+      }
+      .accordion-content {
+        display: none;
+        padding: 15px 20px;
+      }
+      .accordion-item.active > .accordion-content {
+        display: block;
+      }
+
+      /* Vnořené minimalistické akordeony */
+      .nested-accordion {
+        margin-bottom: 0;
+        border: none;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+      }
+      .nested-accordion:last-of-type {
+        border-bottom: none;
+      }
+      .sub-section-title {
+        background: transparent;
+        padding: 14px 10px;
+        margin: 0;
+        font-weight: 500;
+        color: var(--text);
+        font-size: 1rem;
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .sub-section-title:hover {
+        color: var(--primary);
+      }
+
+      /* Minimalistické zavírací tlačítko zespoda */
+      .close-bottom {
+        text-align: center;
+        padding: 10px;
+        margin-top: 10px;
+        background: transparent;
+        color: var(--text-light);
+        cursor: pointer;
+        border-top: 1px dashed var(--border);
+        transition: 0.2s;
+        font-size: 0.9rem;
+      }
+      .close-bottom:hover {
+        color: var(--primary);
+      }
+
+      .atlas-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .atlas-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        background: #f8f9fa;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s;
+        border-left: 5px solid transparent;
+      }
+      .atlas-item:hover {
+        border-left: 5px solid var(--primary);
+        background: #e8f0fe;
+        transform: translateX(8px);
+      }
+
+      /* CSS PRO PROCVIČOVÁNÍ */
+      .practice-section {
+        margin-top: 60px;
+        text-align: center;
+        padding: 30px;
+        background: var(--card-bg);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
+        max-width: 1100px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .practice-section h2 {
+        color: var(--primary-dark);
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+      }
+      .practice-btn-group {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+      }
+      .practice-btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 12px;
+        background: var(--primary);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .practice-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .more-practice-btn {
+        background: var(--primary-dark);
+        margin-top: 25px;
+      }
+      .more-practice-btn:hover {
+        background: #0d3b80;
+      }
+      #practiceContainer {
+        max-width: 100%;
+        margin: 0 auto;
+      }
+      #practiceContainer iframe {
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        background: white;
+        width: 100%;
+        min-height: 650px;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        padding: 20px 0;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        border: 1px solid var(--border);
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        will-change: transform;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .card img {
+        width: 100%;
+        height: 280px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        background: #fff;
+      }
+      .card h3 {
+        margin: 15px 0 5px;
+        font-size: 1.5rem;
+        color: var(--text);
+      }
+      .card .formula {
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 1.3rem;
+        letter-spacing: 1px;
+      }
+
+      .group-header {
+        grid-column: 1 / -1;
+        margin: 50px 0 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid var(--primary);
+        font-size: 1.4rem;
+        color: var(--primary-dark);
+        text-transform: uppercase;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+      }
+      .modal-content {
+        background: white;
+        width: 95%;
+        max-width: 750px;
+        margin: 3vh auto;
+        padding: 40px;
+        border-radius: 30px;
+        position: relative;
+        animation: pop 0.3s ease;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        font-size: 40px;
+        cursor: pointer;
+        color: var(--text-light);
+        transition: 0.2s;
+      }
+      .close-btn:hover {
+        color: #000;
+      }
+
+      #modalBody img {
+        width: 100%;
+        max-width: 550px;
+        height: auto;
+        display: block;
+        margin: auto 30px;
+        border-radius: 20px;
+      }
+
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 20px;
+        }
+        .card img {
+          height: 200px;
+        }
+        .modal-content {
+          padding: 25px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav id="mainNav">
+      <a onclick="showPage('home')" id="link-home" class="active"
+        >Hlavní Atlas</a
+      >
+      <a onclick="showPage('inorganic')" id="link-inorganic">Anorganika</a>
+      <a onclick="showPage('organic')" id="link-organic">Organika</a>
+      <a onclick="showPage('biochem')" id="link-biochem">Biochemie</a>
+    </nav>
+
+    <section id="home" class="page-section active">
+      <header class="hero">
+        <h1>ChemMed Atlas</h1>
+        <div class="search-wrapper">
+          <input
+            type="text"
+            id="globalSearch"
+            placeholder="Hledej prvek nebo vzorec..."
+            oninput="debounceSearch(this.value)"
+          />
+        </div>
+      </header>
+      <div class="container">
+        <!-- Hlavní akordeony pro hledání -->
+        <div class="accordion-container">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              ANORGANIKA <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div id="list-inorganic" class="atlas-list"></div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              ORGANIKA <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div id="list-organic" class="atlas-list"></div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              BIOCHEMIE <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div id="list-biochem" class="atlas-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOVÁ SEKCE PROCVIČOVÁNÍ -->
+        <div class="practice-section">
+          <h2>Procvičování</h2>
+          <div class="practice-btn-group">
+            <button class="practice-btn" onclick="showPractice('inorganic')">
+              Anorganika
+            </button>
+            <button class="practice-btn" onclick="showPractice('organic')">
+              Organika
+            </button>
+            <button class="practice-btn" onclick="showPractice('biochem')">
+              Biochemie
+            </button>
+          </div>
+
+          <div id="practiceContainer"></div>
+
+          <!-- Tlačítko odkazující na Quizlet složku -->
+          <a
+            href="https://quizlet.com/user/Pavelchaloupka123/folders/chemie-3lf?i=2nph8c&x=1xqt"
+            target="_blank"
+            class="practice-btn more-practice-btn"
+            >Více procvičování</a
+          >
+        </div>
+        <!-- KONEC SEKCE PROCVIČOVÁNÍ -->
+      </div>
+    </section>
+
+    <!-- ANORGANIKA -->
+    <section id="inorganic" class="page-section">
+      <div class="container">
+        <header class="hero">
+          <h1>Anorganická chemie</h1>
+          <input
+            type="text"
+            placeholder="Filtrovat anorganiku..."
+            oninput="debounceFilter(this.value, 'inorganicGrid', 'inorganika')"
+          />
+        </header>
+
+        <div class="full-width-accordion-wrapper">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              PERIODICKÁ TABULKA PRVKŮ <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  s-prvky <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-elements-s" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  p-prvky <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-elements-p" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  d-prvky <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-elements-d" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  f-prvky <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-elements-f" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="close-bottom" onclick="closeAccordion(this)">
+                Zavřít celou tabulku prvků ⮝
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              SLOUČENINY <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Anionty <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-compounds-anionty" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Kyseliny <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-compounds-kyseliny" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Zásady <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-compounds-zasady" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Soli <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-compounds-soli" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Ostatní sloučeniny <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-compounds-ostatni" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="close-bottom" onclick="closeAccordion(this)">
+                Zavřít sloučeniny ⮝
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="inorganicGrid" class="grid" style="display: none"></div>
+      </div>
+    </section>
+
+    <!-- ORGANIKA -->
+    <section id="organic" class="page-section">
+      <div class="container">
+        <header class="hero">
+          <h1>Organická chemie</h1>
+          <input
+            type="text"
+            placeholder="Filtrovat organiku..."
+            oninput="debounceFilter(this.value, 'organicGrid', 'organika')"
+          />
+        </header>
+
+        <div class="full-width-accordion-wrapper">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              ORGANICKÉ SLOUČENINY <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Uhlovodíky <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-uhlovodiky" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Deriváty <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-derivaty" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Kyslíkaté deriváty <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-kyslikate" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Karbonylové sloučeniny <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-karbonylove" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Karboxylové kyseliny a deriváty <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-karboxylove" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Alkaloidy a polymery <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-org-alkaloidy" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="close-bottom" onclick="closeAccordion(this)">
+                Zavřít organické sloučeniny ⮝
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="organicGrid" class="grid" style="display: none"></div>
+      </div>
+    </section>
+
+    <!-- BIOCHEMIE -->
+    <section id="biochem" class="page-section">
+      <div class="container">
+        <header class="hero">
+          <h1>Biochemie</h1>
+          <input
+            type="text"
+            placeholder="Filtrovat biochemii..."
+            oninput="debounceFilter(this.value, 'biochemGrid', 'biochemie')"
+          />
+        </header>
+
+        <div class="full-width-accordion-wrapper">
+          <div class="accordion-item">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+              PŘÍRODNÍ LÁTKY A METABOLISMUS <span>+</span>
+            </div>
+            <div class="accordion-content">
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Sacharidy <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-bio-sacharidy" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Lipidy a steroidy <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-bio-lipidy" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Aminokyseliny a proteiny <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-bio-proteiny" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item nested-accordion">
+                <div class="sub-section-title" onclick="toggleAccordion(this)">
+                  Nukleové kyseliny a koenzymy <span>+</span>
+                </div>
+                <div class="accordion-content">
+                  <div id="grid-bio-nukleove" class="grid"></div>
+                  <div class="close-bottom" onclick="closeAccordion(this)">
+                    Zavřít sekci ⮝
+                  </div>
+                </div>
+              </div>
+              <div class="close-bottom" onclick="closeAccordion(this)">
+                Zavřít biochemii ⮝
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="biochemGrid" class="grid" style="display: none"></div>
+      </div>
+    </section>
+
+    <div id="detailModal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <script>
+      // ==========================================
+      // KOMPLETNÍ DATABÁZE (ANORGANIKA + ORGANIKA + BIOCHEMIE)
+      // ==========================================
+      const database = [
+        // --- ANORGANIKA ---
+        {
+          id: 1,
+          name: "Vodík",
+          nameEn: "hydrogen",
+          formula: "H",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: makrobiogenní, součást vody a org. látek. Izotopy: 1H, 2H, 3H.",
+          img: "auto",
+        },
+        {
+          id: 2,
+          name: "Lithium",
+          nameEn: "lithium",
+          formula: "Li",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Soli Li+ se používají v psychiatrii k léčbě bipolární poruchy.",
+          img: "auto",
+        },
+        {
+          id: 3,
+          name: "Sodík",
+          nameEn: "sodium",
+          formula: "Na",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: hlavní extracelulární kation. Funkce: osmotický tlak.",
+          img: "auto",
+        },
+        {
+          id: 4,
+          name: "Draslík",
+          nameEn: "potassium",
+          formula: "K",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: hlavní intracelulární kation. Funkce: srdeční činnost.",
+          img: "auto",
+        },
+        {
+          id: 5,
+          name: "Rubidium",
+          nameEn: "rubidium",
+          formula: "Rb",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Výskyt: V přírodě doprovází draslík, v medicíně okrajový význam.",
+          img: "auto",
+        },
+        {
+          id: 6,
+          name: "Cesium",
+          nameEn: "cesium",
+          formula: "Cs",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Poznámka: Radioizotopy (137Cs) – využití v radioterapii.",
+          img: "auto",
+        },
+        {
+          id: 7,
+          name: "Beryllium",
+          nameEn: "beryllium",
+          formula: "Be",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: Vysoce toxické, vyvolává beryliózu (plicní onemocnění).",
+          img: "auto",
+        },
+        {
+          id: 8,
+          name: "Hořčík",
+          nameEn: "magnesium",
+          formula: "Mg",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: makrobiogenní. Funkce: součást chlorofylu, kofaktor enzymů.",
+          img: "auto",
+        },
+        {
+          id: 9,
+          name: "Vápník",
+          nameEn: "calcium",
+          formula: "Ca",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: makrobiogenní. Funkce: stavba kostí, srážení krve.",
+          img: "auto",
+        },
+        {
+          id: 10,
+          name: "Stroncium",
+          nameEn: "strontium",
+          formula: "Sr",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Poznámka: Radioaktivní 90Sr se ukládá v kostech místo vápníku.",
+          img: "auto",
+        },
+        {
+          id: 11,
+          name: "Baryum",
+          nameEn: "barium",
+          formula: "Ba",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Kontrastní látka v RTG (BaSO4). Rozpustné soli jedovaté.",
+          img: "auto",
+        },
+        {
+          id: 12,
+          name: "Radium",
+          nameEn: "radium",
+          formula: "Ra",
+          group: "s-prvky",
+          cat: "inorganika",
+          desc: "Radioaktivní prvek, dříve využívaný v radioterapii.",
+          img: "auto",
+        },
+        {
+          id: 27,
+          name: "Bor",
+          nameEn: "boron",
+          formula: "B",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "P-prvek. Jeho sloučenina H3BO3 se používá jako antiseptikum.",
+          img: "auto",
+        },
+        {
+          id: 32,
+          name: "Uhlík",
+          nameEn: "carbon",
+          formula: "C",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: základ organické hmoty.",
+          img: "auto",
+        },
+        {
+          id: 37,
+          name: "Dusík",
+          nameEn: "nitrogen",
+          formula: "N",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: v AK a NK. N2O (rajský plyn).",
+          img: "auto",
+        },
+        {
+          id: 42,
+          name: "Kyslík",
+          nameEn: "oxygen",
+          formula: "O",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: nezbytný pro aerobní metabolismus.",
+          img: "auto",
+        },
+        {
+          id: 46,
+          name: "Fluor",
+          nameEn: "fluorine",
+          formula: "F",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: zubní sklovina, kosti.",
+          img: "auto",
+        },
+        {
+          id: 51,
+          name: "Helium",
+          nameEn: "helium",
+          formula: "He",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Inertní plyn. Směsi pro potápěče.",
+          img: "auto",
+        },
+        {
+          id: 28,
+          name: "Hliník",
+          nameEn: "aluminum",
+          formula: "Al",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Antacida, adstringens (obklady).",
+          img: "auto",
+        },
+        {
+          id: 33,
+          name: "Křemík",
+          nameEn: "silicon",
+          formula: "Si",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Výskyt: součást pojivových tkání. Riziko silikózy.",
+          img: "auto",
+        },
+        {
+          id: 38,
+          name: "Fosfor",
+          nameEn: "phosphorus",
+          formula: "P",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: DNA, RNA, ATP, kosti.",
+          img: "auto",
+        },
+        {
+          id: 43,
+          name: "Síra",
+          nameEn: "sulfur",
+          formula: "S",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: v AK (cystein, methionin).",
+          img: "auto",
+        },
+        {
+          id: 47,
+          name: "Chlor",
+          nameEn: "chlorine",
+          formula: "Cl",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: hlavní extracelulární anion.",
+          img: "auto",
+        },
+        {
+          id: 52,
+          name: "Neon",
+          nameEn: "neon",
+          formula: "Ne",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Využití: Výbojky a lasery.",
+          img: "auto",
+        },
+        {
+          id: 29,
+          name: "Gallium",
+          nameEn: "gallium",
+          formula: "Ga",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Radioizotopy pro diagnostiku nádorů.",
+          img: "auto",
+        },
+        {
+          id: 34,
+          name: "Germanium",
+          nameEn: "germanium",
+          formula: "Ge",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Polovodič, v medicíně okrajový význam.",
+          img: "auto",
+        },
+        {
+          id: 39,
+          name: "Arsen",
+          nameEn: "arsenic",
+          formula: "As",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: jed. Sloučeniny dříve v medicíně.",
+          img: "auto",
+        },
+        {
+          id: 44,
+          name: "Selen",
+          nameEn: "selenium",
+          formula: "Se",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: antioxidant, součást selenoproteinů.",
+          img: "auto",
+        },
+        {
+          id: 48,
+          name: "Brom",
+          nameEn: "bromine",
+          formula: "Br",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Bromidy dříve jako sedativa.",
+          img: "auto",
+        },
+        {
+          id: 53,
+          name: "Argon",
+          nameEn: "argon",
+          formula: "Ar",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Využití: Inertní atmosféra.",
+          img: "auto",
+        },
+        {
+          id: 30,
+          name: "Indium",
+          nameEn: "indium",
+          formula: "In",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Využití: Nukleární medicína (značení leukocytů).",
+          img: "auto",
+        },
+        {
+          id: 35,
+          name: "Cín",
+          nameEn: "tin",
+          formula: "Sn",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Sloučeniny: SnF2 v zubních pastách.",
+          img: "auto",
+        },
+        {
+          id: 40,
+          name: "Antimon",
+          nameEn: "antimony",
+          formula: "Sb",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: léčba parazitární leishmaniózy.",
+          img: "auto",
+        },
+        {
+          id: 45,
+          name: "Tellur",
+          nameEn: "tellurium",
+          formula: "Te",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Méně běžný prvek, průmyslové využití.",
+          img: "auto",
+        },
+        {
+          id: 49,
+          name: "Jod",
+          nameEn: "iodine",
+          formula: "I",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: hormony štítné žlázy.",
+          img: "auto",
+        },
+        {
+          id: 54,
+          name: "Krypton",
+          nameEn: "krypton",
+          formula: "Kr",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Využití: Osvětlovací technika.",
+          img: "auto",
+        },
+        {
+          id: 31,
+          name: "Thallium",
+          nameEn: "thallium",
+          formula: "Tl",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: Vysoce toxické, dříve jedy na hlodavce.",
+          img: "auto",
+        },
+        {
+          id: 36,
+          name: "Olovo",
+          nameEn: "lead",
+          formula: "Pb",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: kumulativní jed, poškozuje CNS.",
+          img: "auto",
+        },
+        {
+          id: 41,
+          name: "Bismut",
+          nameEn: "bismuth",
+          formula: "Bi",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: léčba žaludečních vředů.",
+          img: "auto",
+        },
+        {
+          id: 50,
+          name: "Astat",
+          nameEn: "astatine",
+          formula: "At",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Radioaktivní halogen.",
+          img: "auto",
+        },
+        {
+          id: 55,
+          name: "Xenon",
+          nameEn: "xenon",
+          formula: "Xe",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: anestetikum, kontrastní látka.",
+          img: "auto",
+        },
+        {
+          id: 56,
+          name: "Radon",
+          nameEn: "radon",
+          formula: "Rn",
+          group: "p-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Jáchymov (koupele). Riziko: rakovina plic.",
+          img: "auto",
+        },
+        {
+          id: 13,
+          name: "Mangan",
+          nameEn: "manganese",
+          formula: "Mn",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: mikrobiogenní, kofaktor enzymů. Důležitý pro metabolismus.",
+          img: "auto",
+        },
+        {
+          id: 14,
+          name: "Železo",
+          nameEn: "iron",
+          formula: "Fe",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: hemoglobin, myoglobin. Transport kyslíku v krvi.",
+          img: "auto",
+        },
+        {
+          id: 15,
+          name: "Kobalt",
+          nameEn: "cobalt",
+          formula: "Co",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: součást vitaminu B12 (kyanokobalamin).",
+          img: "auto",
+        },
+        {
+          id: 16,
+          name: "Nikl",
+          nameEn: "nickel",
+          formula: "Ni",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Význam: Stopový prvek, ale silný kontaktní alergen.",
+          img: "auto",
+        },
+        {
+          id: 17,
+          name: "Měď",
+          nameEn: "copper",
+          formula: "Cu",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: součást enzymů dýchacího řetězce.",
+          img: "auto",
+        },
+        {
+          id: 18,
+          name: "Zinek",
+          nameEn: "zinc",
+          formula: "Zn",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: součást inzulinu a mnoha enzymů. Hojení tkání.",
+          img: "auto",
+        },
+        {
+          id: 19,
+          name: "Molybden",
+          nameEn: "molybdenum",
+          formula: "Mo",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Biogenní: součást enzymů (xantinoxidáza).",
+          img: "auto",
+        },
+        {
+          id: 20,
+          name: "Technecium",
+          nameEn: "technetium",
+          formula: "Tc",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Nejdůležitější radionuklid v diagnostice (99mTc).",
+          img: "auto",
+        },
+        {
+          id: 21,
+          name: "Stříbro",
+          nameEn: "silver",
+          formula: "Ag",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Baktericidní účinky (AgNO3, koloidní stříbro).",
+          img: "auto",
+        },
+        {
+          id: 22,
+          name: "Kadmium",
+          nameEn: "cadmium",
+          formula: "Cd",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: Vysoce toxický kov, poškozuje ledviny a kosti.",
+          img: "auto",
+        },
+        {
+          id: 23,
+          name: "Platina",
+          nameEn: "platinum",
+          formula: "Pt",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Cytostatika (cis-platina) v onkologii.",
+          img: "auto",
+        },
+        {
+          id: 24,
+          name: "Zlato",
+          nameEn: "gold",
+          formula: "Au",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Medicína: Chryzoterapie (revmatoidní artritida).",
+          img: "auto",
+        },
+        {
+          id: 25,
+          name: "Rtuť",
+          nameEn: "mercury",
+          formula: "Hg",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Toxicita: Vysoce toxická. Medicína: amalgámy.",
+          img: "auto",
+        },
+        {
+          id: 26,
+          name: "Wolfram",
+          nameEn: "tungsten",
+          formula: "W",
+          group: "d-prvky",
+          cat: "inorganika",
+          desc: "Využití: RTG lampy (anoda). Extrémně vysoký bod tání.",
+          img: "auto",
+        },
+        {
+          id: 101,
+          name: "Chlorid",
+          nameEn: "chloride",
+          formula: "Cl-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Hlavní extracelulární anion.",
+          img: "auto",
+        },
+        {
+          id: 102,
+          name: "Fluorid",
+          nameEn: "fluoride",
+          formula: "F-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Prevence zubního kazu.",
+          img: "auto",
+        },
+        {
+          id: 103,
+          name: "Bromid",
+          nameEn: "bromide",
+          formula: "Br-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Dříve využívaný jako sedativum.",
+          img: "auto",
+        },
+        {
+          id: 104,
+          name: "Jodid",
+          nameEn: "iodide",
+          formula: "I-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Nezbytný pro štítnou žlázu.",
+          img: "auto",
+        },
+        {
+          id: 105,
+          name: "Hydrogenuhličitan",
+          nameEn: "bicarbonate",
+          formula: "HCO3-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Krevní pufr udržující pH.",
+          img: "auto",
+        },
+        {
+          id: 106,
+          name: "Fosforečnan",
+          nameEn: "phosphate",
+          formula: "PO4 3-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Součást kostí, DNA a ATP.",
+          img: "auto",
+        },
+        {
+          id: 107,
+          name: "Kyanid",
+          nameEn: "cyanide",
+          formula: "CN-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Jed, blokuje buněčné dýchání.",
+          img: "auto",
+        },
+        {
+          id: 108,
+          name: "Dusitany",
+          nameEn: "nitrite",
+          formula: "NO2-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Konzervace masa. Riziko methemoglobinemie.",
+          img: "auto",
+        },
+        {
+          id: 109,
+          name: "Azid",
+          nameEn: "azide",
+          formula: "N3-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Toxický ion, airbagy.",
+          img: "auto",
+        },
+        {
+          id: 110,
+          name: "Chlornan",
+          nameEn: "hypochlorite",
+          formula: "ClO-",
+          group: "Anionty",
+          cat: "inorganika",
+          desc: "Dezinfekční činidlo (Savo).",
+          img: "auto",
+        },
+        {
+          id: 301,
+          name: "Kyselina boritá",
+          nameEn: "boric acid",
+          formula: "H3BO3",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "Antiseptikum (borová voda).",
+          img: "auto",
+        },
+        {
+          id: 306,
+          name: "Kyselina dusičná",
+          nameEn: "nitric acid",
+          formula: "HNO3",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "Silná kyselina a oxidant.",
+          img: "auto",
+        },
+        {
+          id: 307,
+          name: "Kyselina fosforečná",
+          nameEn: "phosphoric acid",
+          formula: "H3PO4",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "Konzervant v potravinářství.",
+          img: "auto",
+        },
+        {
+          id: 308,
+          name: "Sirovodík (Sulfan)",
+          nameEn: "hydrogen sulfide",
+          formula: "H2S",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "Jedovatý plyn, slabá kyselina.",
+          img: "auto",
+        },
+        {
+          id: 309,
+          name: "Kyselina sírová",
+          nameEn: "sulfuric acid",
+          formula: "H2SO4",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "Silná žíravina, vitriol.",
+          img: "auto",
+        },
+        {
+          id: 310,
+          name: "Kyselina chlorovodíková",
+          nameEn: "hydrochloric acid",
+          formula: "HCl",
+          group: "Kyseliny",
+          cat: "inorganika",
+          desc: "V žaludeční šťávě.",
+          img: "auto",
+        },
+        {
+          id: 204,
+          name: "Hydroxid sodný",
+          nameEn: "sodium hydroxide",
+          formula: "NaOH",
+          group: "Zásady",
+          cat: "inorganika",
+          desc: "Louh sodný. Čištění odpadů.",
+          img: "auto",
+        },
+        {
+          id: 208,
+          name: "Hydroxid vápenatý",
+          nameEn: "calcium hydroxide",
+          formula: "Ca(OH)2",
+          group: "Zásady",
+          cat: "inorganika",
+          desc: "Hašené vápno.",
+          img: "auto",
+        },
+        {
+          id: 303,
+          name: "Amoniak",
+          nameEn: "ammonia",
+          formula: "NH3",
+          group: "Zásady",
+          cat: "inorganika",
+          desc: "Čpavek. Odpadní produkt metabolismu.",
+          img: "auto",
+        },
+        {
+          id: 202,
+          name: "Chlorid sodný",
+          nameEn: "sodium chloride",
+          formula: "NaCl",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Kuchyňská sůl. Fyziologický roztok.",
+          img: "auto",
+        },
+        {
+          id: 203,
+          name: "Jedlá soda",
+          nameEn: "sodium bicarbonate",
+          formula: "NaHCO3",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Antacidum při pálení žáhy.",
+          img: "auto",
+        },
+        {
+          id: 205,
+          name: "Kyanid draselný",
+          nameEn: "potassium cyanide",
+          formula: "KCN",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Smrtelně jedovatá sůl.",
+          img: "auto",
+        },
+        {
+          id: 207,
+          name: "Hořká sůl",
+          nameEn: "magnesium sulfate",
+          formula: "MgSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Silné projímadlo.",
+          img: "auto",
+        },
+        {
+          id: 209,
+          name: "Vápenec",
+          nameEn: "calcium carbonate",
+          formula: "CaCO3",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Uhličitan vápenatý.",
+          img: "auto",
+        },
+        {
+          id: 210,
+          name: "Sádra",
+          nameEn: "calcium sulfate",
+          formula: "CaSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Fixace zlomenin.",
+          img: "auto",
+        },
+        {
+          id: 211,
+          name: "Síran barnatý",
+          nameEn: "barium sulfate",
+          formula: "BaSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Kontrastní látka pro RTG.",
+          img: "auto",
+        },
+        {
+          id: 401,
+          name: "Modrá skalice",
+          nameEn: "copper sulfate",
+          formula: "CuSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Součást Fehlingova činidla.",
+          img: "auto",
+        },
+        {
+          id: 402,
+          name: "Lapis",
+          nameEn: "silver nitrate",
+          formula: "AgNO3",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "K vypalování bradavic.",
+          img: "auto",
+        },
+        {
+          id: 403,
+          name: "Bílá skalice",
+          nameEn: "zinc sulfate",
+          formula: "ZnSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Klíčová pro imunitu.",
+          img: "auto",
+        },
+        {
+          id: 404,
+          name: "Sublimát",
+          nameEn: "mercuric chloride",
+          formula: "HgCl2",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Prudce jedovatý chlorid.",
+          img: "auto",
+        },
+        {
+          id: 405,
+          name: "Hypermangan",
+          nameEn: "potassium permanganate",
+          formula: "KMnO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "Dezinfekční činidlo.",
+          img: "auto",
+        },
+        {
+          id: 406,
+          name: "Zelená skalice",
+          nameEn: "ferrous sulfate",
+          formula: "FeSO4",
+          group: "Soli",
+          cat: "inorganika",
+          desc: "K léčbě anémie.",
+          img: "auto",
+        },
+        {
+          id: 201,
+          name: "Peroxid vodíku",
+          nameEn: "hydrogen peroxide",
+          formula: "H2O2",
+          group: "Ostatní sloučeniny",
+          cat: "inorganika",
+          desc: "3% dezinfekce ran.",
+          img: "auto",
+        },
+        {
+          id: 206,
+          name: "Oxid hořečnatý",
+          nameEn: "magnesium oxide",
+          formula: "MgO",
+          group: "Ostatní sloučeniny",
+          cat: "inorganika",
+          desc: "Magnesia usta. Antacidum.",
+          img: "auto",
+        },
+        {
+          id: 302,
+          name: "Oxid uhelnatý",
+          nameEn: "carbon monoxide",
+          formula: "CO",
+          group: "Ostatní sloučeniny",
+          cat: "inorganika",
+          desc: "Jedovatý plyn.",
+          img: "auto",
+        },
+        {
+          id: 304,
+          name: "Rajský plyn",
+          nameEn: "nitrous oxide",
+          formula: "N2O",
+          group: "Ostatní sloučeniny",
+          cat: "inorganika",
+          desc: "Inhalační anestetikum.",
+          img: "auto",
+        },
+        {
+          id: 305,
+          name: "Oxid dusnatý",
+          nameEn: "nitric oxide",
+          formula: "NO",
+          group: "Ostatní sloučeniny",
+          cat: "inorganika",
+          desc: "Způsobuje vasodilataci.",
+          img: "auto",
+        },
+
+        // --- ORGANIKA ---
+        {
+          id: 1001,
+          name: "Methan",
+          nameEn: "methane",
+          formula: "CH4",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Hlavní složka zemního plynu, produkt metabolismu bakterií.",
+          img: "auto",
+        },
+        {
+          id: 1002,
+          name: "Ethan",
+          nameEn: "ethane",
+          formula: "C2H6",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Plynné palivo.",
+          img: "auto",
+        },
+        {
+          id: 1003,
+          name: "Propan",
+          nameEn: "propane",
+          formula: "C3H8",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Plynné palivo.",
+          img: "auto",
+        },
+        {
+          id: 1004,
+          name: "Butan",
+          nameEn: "butane",
+          formula: "C4H10",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Plynné palivo.",
+          img: "auto",
+        },
+        {
+          id: 1005,
+          name: "Hexan",
+          nameEn: "hexane",
+          formula: "C6H14",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Laboratorní nepolární rozpouštědlo.",
+          img: "auto",
+        },
+        {
+          id: 1006,
+          name: "Cyklohexan",
+          nameEn: "cyclohexane",
+          formula: "C6H12",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Laboratorní nepolární rozpouštědlo.",
+          img: "auto",
+        },
+        {
+          id: 1007,
+          name: "Cyklopropan",
+          nameEn: "cyclopropane",
+          formula: "C3H6",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Historické anestetikum, cyklický uhlovodík.",
+          img: "auto",
+        },
+        {
+          id: 1008,
+          name: "Ethylen (Ethen)",
+          nameEn: "ethylene",
+          formula: "C2H4",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Rostlinný hormon, surovina pro plasty (PE).",
+          img: "auto",
+        },
+        {
+          id: 1009,
+          name: "Acetylen (Ethyn)",
+          nameEn: "acetylene",
+          formula: "C2H2",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Lineární molekula, plyn pro svařování.",
+          img: "auto",
+        },
+        {
+          id: 1010,
+          name: "Izopren",
+          nameEn: "isoprene",
+          formula: "C5H8",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "2-methyl-1,3-butadien. Základ přírodního kaučuku, terpenů a steroidů.",
+          img: "auto",
+        },
+        {
+          id: 1011,
+          name: "Benzen",
+          nameEn: "benzene",
+          formula: "C6H6",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Aromatické jádro, vysoce toxický a karcinogenní.",
+          img: "auto",
+        },
+        {
+          id: 1012,
+          name: "Toluen",
+          nameEn: "toluene",
+          formula: "C7H8",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Methylbenzen. Rozpouštědlo, v těle se mění na kys. benzoovou.",
+          img: "auto",
+        },
+        {
+          id: 1013,
+          name: "Styren",
+          nameEn: "styrene",
+          formula: "C8H8",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Fenylethen. Výroba polystyrenu, podezřelý karcinogen.",
+          img: "auto",
+        },
+        {
+          id: 1014,
+          name: "Naftalen",
+          nameEn: "naphthalene",
+          formula: "C10H8",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Dvě kondenzovaná jádra, dříve proti molům.",
+          img: "auto",
+        },
+        {
+          id: 1015,
+          name: "Antracen",
+          nameEn: "anthracene",
+          formula: "C14H10",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Tři kondenzovaná jádra v řadě, barvivářství.",
+          img: "auto",
+        },
+        {
+          id: 1016,
+          name: "Fenanthren",
+          nameEn: "phenanthrene",
+          formula: "C14H10",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Tři kondenzovaná jádra, základ steranového skeletu (steroidy).",
+          img: "auto",
+        },
+        {
+          id: 1017,
+          name: "Bifenyl",
+          nameEn: "biphenyl",
+          formula: "C12H10",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Dvě spojená jádra, základ pro PCB (toxické polutanty).",
+          img: "auto",
+        },
+        {
+          id: 1018,
+          name: "Benzopyren",
+          nameEn: "benzopyrene",
+          formula: "C20H12",
+          group: "Uhlovodíky",
+          cat: "organika",
+          desc: "Silný karcinogen v kouři a uzeninách.",
+          img: "auto",
+        },
+        {
+          id: 1019,
+          name: "Chloroform",
+          nameEn: "chloroform",
+          formula: "CHCl3",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Dříve anestetikum, dnes rozpouštědlo, hepatotoxický.",
+          img: "auto",
+        },
+        {
+          id: 1020,
+          name: "Halotan",
+          nameEn: "halothane",
+          formula: "C2HBrClF3",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Moderní inhalační anestetikum.",
+          img: "auto",
+        },
+        {
+          id: 1021,
+          name: "Jodoform",
+          nameEn: "iodoform",
+          formula: "CHI3",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Antiseptikum, typický zápach.",
+          img: "auto",
+        },
+        {
+          id: 1022,
+          name: "Ethylchlorid (Kelen)",
+          nameEn: "ethyl chloride",
+          formula: "C2H5Cl",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Lokální anestetikum, 'mrazík' na sportovní úrazy.",
+          img: "auto",
+        },
+        {
+          id: 1023,
+          name: "Vinylchlorid",
+          nameEn: "vinyl chloride",
+          formula: "C2H3Cl",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Karcinogenní monomer pro PVC.",
+          img: "auto",
+        },
+        {
+          id: 1024,
+          name: "Freony",
+          nameEn: "trichlorofluoromethane",
+          formula: "CCl3F",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Např. CCl3F. Chladiva, poškozují ozónovou vrstvu.",
+          img: "auto",
+        },
+        {
+          id: 1025,
+          name: "DDT",
+          nameEn: "DDT",
+          formula: "C14H9Cl5",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Zakázaný insekticid, kumuluje se v tukové tkáni.",
+          img: "auto",
+        },
+        {
+          id: 1026,
+          name: "Lindan",
+          nameEn: "lindane",
+          formula: "C6H6Cl6",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Insekticid (proti vši dětské), neurotoxický.",
+          img: "auto",
+        },
+        {
+          id: 1027,
+          name: "PCB",
+          nameEn: "polychlorinated biphenyl",
+          formula: "PCB",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Perzistentní organické znečišťovatele.",
+          img: "auto",
+        },
+        {
+          id: 1028,
+          name: "Nitrobenzen",
+          nameEn: "nitrobenzene",
+          formula: "C6H5NO2",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Vůně po mandlích, výroba anilinu, toxický.",
+          img: "auto",
+        },
+        {
+          id: 1029,
+          name: "Nitroglycerin",
+          nameEn: "nitroglycerin",
+          formula: "C3H5N3O9",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Výbušnina a lék na srdce (angina pectoris).",
+          img: "auto",
+        },
+        {
+          id: 1030,
+          name: "TNT (Trinitrotoluen)",
+          nameEn: "trinitrotoluene",
+          formula: "C7H5N3O6",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Průmyslová výbušnina.",
+          img: "auto",
+        },
+        {
+          id: 1031,
+          name: "Anilin",
+          nameEn: "aniline",
+          formula: "C6H5NH2",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Aminobenzen. Základ barviv a léčiv (paracetamol).",
+          img: "auto",
+        },
+        {
+          id: 1032,
+          name: "Fenylethylamin",
+          nameEn: "phenethylamine",
+          formula: "C8H11N",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Hormon/neurotransmitér v mozku.",
+          img: "auto",
+        },
+        {
+          id: 1033,
+          name: "Methylamin",
+          nameEn: "methylamine",
+          formula: "CH3NH2",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Amin s rybím pachem.",
+          img: "auto",
+        },
+        {
+          id: 1034,
+          name: "Dimethylamin",
+          nameEn: "dimethylamine",
+          formula: "(CH3)2NH",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Amin s rybím pachem.",
+          img: "auto",
+        },
+        {
+          id: 1035,
+          name: "Trimethylamin",
+          nameEn: "trimethylamine",
+          formula: "(CH3)3N",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Amin s rybím pachem.",
+          img: "auto",
+        },
+        {
+          id: 1036,
+          name: "Nitromethan",
+          nameEn: "nitromethane",
+          formula: "CH3NO2",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Rozpouštědla a paliva.",
+          img: "auto",
+        },
+        {
+          id: 1037,
+          name: "Nitroethan",
+          nameEn: "nitroethane",
+          formula: "C2H5NO2",
+          group: "Deriváty",
+          cat: "organika",
+          desc: "Rozpouštědla a paliva.",
+          img: "auto",
+        },
+        {
+          id: 1038,
+          name: "Methanol",
+          nameEn: "methanol",
+          formula: "CH3OH",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Prudký jed (slepota, smrt), smrtelná dávka 30ml.",
+          img: "auto",
+        },
+        {
+          id: 1039,
+          name: "Ethanol",
+          nameEn: "ethanol",
+          formula: "C2H5OH",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Alkohol v nápojích, dezinfekce (70%), metabolismus na acetaldehyd.",
+          img: "auto",
+        },
+        {
+          id: 1040,
+          name: "Izopropanol",
+          nameEn: "isopropanol",
+          formula: "C3H8O",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Propan-2-ol. Hlavní složka plošné dezinfekce na ruce.",
+          img: "auto",
+        },
+        {
+          id: 1041,
+          name: "Glycerol",
+          nameEn: "glycerol",
+          formula: "C3H8O3",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Propan-1,2,3-triol. Součást tuků, v kosmetice jako humektant.",
+          img: "auto",
+        },
+        {
+          id: 1042,
+          name: "Ethylenglykol",
+          nameEn: "ethylene glycol",
+          formula: "C2H6O2",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Nemrznoucí směs, silně toxický pro ledviny.",
+          img: "auto",
+        },
+        {
+          id: 1043,
+          name: "Fenol",
+          nameEn: "phenol",
+          formula: "C6H5OH",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Toxický, leptá kůži, historická dezinfekce (karbolka).",
+          img: "auto",
+        },
+        {
+          id: 1044,
+          name: "Kresoly",
+          nameEn: "cresol",
+          formula: "C7H8O",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Methylfenoly. Dezinfekční složka (např. v Lysolu).",
+          img: "auto",
+        },
+        {
+          id: 1045,
+          name: "Bisfenol A (BPA)",
+          nameEn: "bisphenol A",
+          formula: "C15H16O2",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "Výroba plastů, endokrinní disruptor.",
+          img: "auto",
+        },
+        {
+          id: 1046,
+          name: "Ethanolamin",
+          nameEn: "ethanolamine",
+          formula: "C2H7NO",
+          group: "Kyslíkaté deriváty",
+          cat: "organika",
+          desc: "2-aminoethanol. Součást biologických membrán (fosfolipidy).",
+          img: "auto",
+        },
+        {
+          id: 1047,
+          name: "Formaldehyd",
+          nameEn: "formaldehyde",
+          formula: "CH2O",
+          group: "Karbonylové sloučeniny",
+          cat: "organika",
+          desc: "Methanal. Alergen, karcinogen, 40% roztok (formalin) konzervuje tkáně.",
+          img: "auto",
+        },
+        {
+          id: 1048,
+          name: "Acetaldehyd",
+          nameEn: "acetaldehyde",
+          formula: "C2H4O",
+          group: "Karbonylové sloučeniny",
+          cat: "organika",
+          desc: "Ethanal. Toxický meziprodukt metabolismu ethanolu, způsobuje kocovinu.",
+          img: "auto",
+        },
+        {
+          id: 1049,
+          name: "Akrolein",
+          nameEn: "acrolein",
+          formula: "C3H4O",
+          group: "Karbonylové sloučeniny",
+          cat: "organika",
+          desc: "Propenal. Toxický plyn z přepáleného tuku.",
+          img: "auto",
+        },
+        {
+          id: 1050,
+          name: "Aceton",
+          nameEn: "acetone",
+          formula: "C3H6O",
+          group: "Karbonylové sloučeniny",
+          cat: "organika",
+          desc: "Propanon. Rozpouštědlo, metabolit (diabetická ketoacidóza).",
+          img: "auto",
+        },
+        {
+          id: 1051,
+          name: "Glyceraldehyd",
+          nameEn: "glyceraldehyde",
+          formula: "C3H6O3",
+          group: "Karbonylové sloučeniny",
+          cat: "organika",
+          desc: "Nejjednodušší aldóza, klíč k metabolismu cukrů.",
+          img: "auto",
+        },
+        {
+          id: 1052,
+          name: "Kyselina mravenčí",
+          nameEn: "formic acid",
+          formula: "HCOOH",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "V mravencích a kopřivách, leptá sliznice.",
+          img: "auto",
+        },
+        {
+          id: 1053,
+          name: "Kyselina octová",
+          nameEn: "acetic acid",
+          formula: "CH3COOH",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Součást octa (8%), acetyl-CoA v metabolismu.",
+          img: "auto",
+        },
+        {
+          id: 1054,
+          name: "Kyselina šťavelová",
+          nameEn: "oxalic acid",
+          formula: "C2H2O4",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Ve špenátu, váže vápník (riziko ledvinových kamenů).",
+          img: "auto",
+        },
+        {
+          id: 1055,
+          name: "Kyselina mléčná",
+          nameEn: "lactic acid",
+          formula: "C3H6O3",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Vzniká ve svalech při anaerobní námaze.",
+          img: "auto",
+        },
+        {
+          id: 1056,
+          name: "Kyselina citronová",
+          nameEn: "citric acid",
+          formula: "C6H8O7",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Klíčový meziprodukt Krebsova cyklu.",
+          img: "auto",
+        },
+        {
+          id: 1057,
+          name: "Kyselina salicylová",
+          nameEn: "salicylic acid",
+          formula: "C7H6O3",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Keratolytikum, základ pro aspirin.",
+          img: "auto",
+        },
+        {
+          id: 1058,
+          name: "Acetylsalicylová kyselina",
+          nameEn: "acetylsalicylic acid",
+          formula: "C9H8O4",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Aspirin/Acylpyrin, antipyretikum a analgetikum.",
+          img: "auto",
+        },
+        {
+          id: 1059,
+          name: "Paracetamol",
+          nameEn: "paracetamol",
+          formula: "C8H9NO2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Analgetikum, antipyretikum (Paralen).",
+          img: "auto",
+        },
+        {
+          id: 1060,
+          name: "Kyselina askorbová",
+          nameEn: "ascorbic acid",
+          formula: "C6H8O6",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Vitamin C, antioxidant, syntéza kolagenu.",
+          img: "auto",
+        },
+        {
+          id: 1061,
+          name: "Kyselina močová",
+          nameEn: "uric acid",
+          formula: "C5H4N4O3",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Odpad metabolismu purinů, zvýšená hladina = dna.",
+          img: "auto",
+        },
+        {
+          id: 1062,
+          name: "Kyselina benzoová",
+          nameEn: "benzoic acid",
+          formula: "C7H6O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Konzervant (E210).",
+          img: "auto",
+        },
+        {
+          id: 1063,
+          name: "Kyselina olejová",
+          nameEn: "oleic acid",
+          formula: "C18H34O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Mastná kyselina v tucích.",
+          img: "auto",
+        },
+        {
+          id: 1064,
+          name: "Kyselina stearová",
+          nameEn: "stearic acid",
+          formula: "C18H36O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Mastná kyselina v tucích.",
+          img: "auto",
+        },
+        {
+          id: 1065,
+          name: "Kyselina palmitová",
+          nameEn: "palmitic acid",
+          formula: "C16H32O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Mastná kyselina v tucích.",
+          img: "auto",
+        },
+        {
+          id: 1066,
+          name: "Kyselina jablečná",
+          nameEn: "malic acid",
+          formula: "C4H6O5",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Ovocná kyselina, meziprodukt metabolismu.",
+          img: "auto",
+        },
+        {
+          id: 1067,
+          name: "Kyselina vinná",
+          nameEn: "tartaric acid",
+          formula: "C4H6O6",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Ovocná kyselina, meziprodukt metabolismu.",
+          img: "auto",
+        },
+        {
+          id: 1068,
+          name: "Kyselina akrylová",
+          nameEn: "acrylic acid",
+          formula: "C3H4O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Výroba akrylátů.",
+          img: "auto",
+        },
+        {
+          id: 1069,
+          name: "Urea (Močovina)",
+          nameEn: "urea",
+          formula: "CH4N2O",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Odpadní produkt metabolismu dusíku, vylučuje se močí.",
+          img: "auto",
+        },
+        {
+          id: 1070,
+          name: "Fosgen",
+          nameEn: "phosgene",
+          formula: "COCl2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Vysoce toxický bojový plyn, dichlorid kys. uhličité.",
+          img: "auto",
+        },
+        {
+          id: 1071,
+          name: "Formamid",
+          nameEn: "formamide",
+          formula: "CH3NO",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Silné organické rozpouštědlo.",
+          img: "auto",
+        },
+        {
+          id: 1072,
+          name: "DMF",
+          nameEn: "dimethylformamide",
+          formula: "C3H7NO",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Silné organické rozpouštědlo.",
+          img: "auto",
+        },
+        {
+          id: 1073,
+          name: "Acetonitril",
+          nameEn: "acetonitrile",
+          formula: "CH3CN",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Methylkyanid. Laboratorní rozpouštědlo.",
+          img: "auto",
+        },
+        {
+          id: 1074,
+          name: "Acetanhydrid",
+          nameEn: "acetic anhydride",
+          formula: "C4H6O3",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Činidlo pro výrobu léčiv.",
+          img: "auto",
+        },
+        {
+          id: 1075,
+          name: "Etylacetát",
+          nameEn: "ethyl acetate",
+          formula: "C4H8O2",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Rozpouštědlo v odlakovačích.",
+          img: "auto",
+        },
+        {
+          id: 1076,
+          name: "Octan sodný",
+          nameEn: "sodium acetate",
+          formula: "CH3COONa",
+          group: "Karboxylové kyseliny a deriváty",
+          cat: "organika",
+          desc: "Konzervant, hřejivé polštářky.",
+          img: "auto",
+        },
+        {
+          id: 1077,
+          name: "Kofein",
+          nameEn: "caffeine",
+          formula: "C8H10N4O2",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Stimulant CNS, v kávě a čaji.",
+          img: "auto",
+        },
+        {
+          id: 1078,
+          name: "Nikotin",
+          nameEn: "nicotine",
+          formula: "C10H14N2",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Vysoce návykový alkaloid v tabáku.",
+          img: "auto",
+        },
+        {
+          id: 1079,
+          name: "Ethylenoxid",
+          nameEn: "ethylene oxide",
+          formula: "C2H4O",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Oxiran. Plynná sterilizace lékařského vybavení.",
+          img: "auto",
+        },
+        {
+          id: 1080,
+          name: "Propylenoxid",
+          nameEn: "propylene oxide",
+          formula: "C3H6O",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Výroba polyuretanů.",
+          img: "auto",
+        },
+        {
+          id: 1081,
+          name: "Ftaláty",
+          nameEn: "phthalate",
+          formula: "R2(C8H4O4)",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Změkčovadla plastů, podezření na narušování hormonů.",
+          img: "auto",
+        },
+        {
+          id: 1082,
+          name: "Polyethylen (PE)",
+          nameEn: "polyethylene",
+          formula: "(C2H4)n",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Běžný plast a polymer.",
+          img: "auto",
+        },
+        {
+          id: 1083,
+          name: "Polypropylen (PP)",
+          nameEn: "polypropylene",
+          formula: "(C3H6)n",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Běžný plast a polymer.",
+          img: "auto",
+        },
+        {
+          id: 1084,
+          name: "Polystyren (PS)",
+          nameEn: "polystyrene",
+          formula: "(C8H8)n",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Běžný plast a polymer.",
+          img: "auto",
+        },
+        {
+          id: 1085,
+          name: "PVC",
+          nameEn: "polyvinyl chloride",
+          formula: "(C2H3Cl)n",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Běžný plast a polymer.",
+          img: "auto",
+        },
+        {
+          id: 1086,
+          name: "Teflon",
+          nameEn: "polytetrafluoroethylene",
+          formula: "(C2F4)n",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Běžný plast a polymer.",
+          img: "auto",
+        },
+        {
+          id: 1087,
+          name: "Nylon",
+          nameEn: "nylon",
+          formula: "Polyamid",
+          group: "Alkaloidy a polymery",
+          cat: "organika",
+          desc: "Syntetické vlákno.",
+          img: "auto",
+        },
+
+        // --- BIOCHEMIE ---
+        {
+          id: 2001,
+          name: "Glukóza",
+          nameEn: "glucose",
+          formula: "C6H12O6",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Hroznový cukr. Základní zdroj energie pro buňky.",
+          img: "auto",
+        },
+        {
+          id: 2002,
+          name: "Fruktóza",
+          nameEn: "fructose",
+          formula: "C6H12O6",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Ovocný cukr. Nejsladší cukr, zdroj energie.",
+          img: "auto",
+        },
+        {
+          id: 2003,
+          name: "Galaktóza",
+          nameEn: "galactose",
+          formula: "C6H12O6",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Součást mléčného cukru (laktózy).",
+          img: "auto",
+        },
+        {
+          id: 2004,
+          name: "Ribóza",
+          nameEn: "ribose",
+          formula: "C5H10O5",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Aldopentóza. Součást RNA a ATP.",
+          img: "auto",
+        },
+        {
+          id: 2005,
+          name: "Deoxyribóza",
+          nameEn: "deoxyribose",
+          formula: "C5H10O4",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Součást DNA (chybí kyslík na 2. uhlíku).",
+          img: "auto",
+        },
+        {
+          id: 2006,
+          name: "Glyceraldehyd",
+          nameEn: "glyceraldehyde",
+          formula: "C3H6O3",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Trióza, meziprodukt metabolismu sacharidů.",
+          img: "auto",
+        },
+        {
+          id: 2007,
+          name: "Dihydroxyaceton",
+          nameEn: "dihydroxyacetone",
+          formula: "C3H6O3",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Trióza, meziprodukt metabolismu, využíván i v samoopalovacích krémech.",
+          img: "auto",
+        },
+        {
+          id: 2008,
+          name: "Sacharóza",
+          nameEn: "sucrose",
+          formula: "C12H22O11",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Běžný stolní cukr (řepný/třtinový). Spojení glukóza + fruktóza.",
+          img: "auto",
+        },
+        {
+          id: 2009,
+          name: "Laktóza",
+          nameEn: "lactose",
+          formula: "C12H22O11",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Mléčný cukr. Spojení galaktóza + glukóza.",
+          img: "auto",
+        },
+        {
+          id: 2010,
+          name: "Maltóza",
+          nameEn: "maltose",
+          formula: "C12H22O11",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Sladový cukr, vzniká štěpením škrobu. Glukóza + glukóza.",
+          img: "auto",
+        },
+        {
+          id: 2011,
+          name: "Škrob",
+          nameEn: "starch",
+          formula: "(C6H10O5)n",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Zásobní cukr rostlin. Skládá se z amylózy a amylopektinu.",
+          img: "auto",
+        },
+        {
+          id: 2012,
+          name: "Glykogen",
+          nameEn: "glycogen",
+          formula: "(C6H10O5)n",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Živočišný škrob, zásobní cukr v játrech a svalech.",
+          img: "auto",
+        },
+        {
+          id: 2013,
+          name: "Celulóza",
+          nameEn: "cellulose",
+          formula: "(C6H10O5)n",
+          group: "Sacharidy",
+          cat: "biochemie",
+          desc: "Stavební materiál rostlin (vláknina), pro lidi nestravitelná.",
+          img: "auto",
+        },
+        {
+          id: 2014,
+          name: "Kyselina palmitová",
+          nameEn: "palmitic acid",
+          formula: "C16H32O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Nasycená mastná kyselina (16:0).",
+          img: "auto",
+        },
+        {
+          id: 2015,
+          name: "Kyselina stearová",
+          nameEn: "stearic acid",
+          formula: "C18H36O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Nasycená mastná kyselina (18:0).",
+          img: "auto",
+        },
+        {
+          id: 2016,
+          name: "Kyselina olejová",
+          nameEn: "oleic acid",
+          formula: "C18H34O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Nenasycená mastná kyselina, klíčová součást olivového oleje.",
+          img: "auto",
+        },
+        {
+          id: 2017,
+          name: "Kyselina linolová",
+          nameEn: "linoleic acid",
+          formula: "C18H32O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Esenciální nenasycená mastná kyselina (Omega-6).",
+          img: "auto",
+        },
+        {
+          id: 2018,
+          name: "Kyselina linolenová",
+          nameEn: "linolenic acid",
+          formula: "C18H30O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Esenciální nenasycená mastná kyselina (Omega-3).",
+          img: "auto",
+        },
+        {
+          id: 2019,
+          name: "Glycerol",
+          nameEn: "glycerol",
+          formula: "C3H8O3",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Trojsytný alkohol, základ tuků.",
+          img: "auto",
+        },
+        {
+          id: 2020,
+          name: "Triglyceridy",
+          nameEn: "triglyceride",
+          formula: "Ester glycerolu",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Zásobní tuky v tukové tkáni.",
+          img: "auto",
+        },
+        {
+          id: 2021,
+          name: "Lecitin",
+          nameEn: "lecithin",
+          formula: "Fosfolipid",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Hlavní zástupce fosfolipidů. Tvoří buněčné membrány.",
+          img: "auto",
+        },
+        {
+          id: 2022,
+          name: "Vosky",
+          nameEn: "wax",
+          formula: "Vyšší estery",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Vyšší estery mastných kyselin a alkoholů (lanolin, včelí vosk).",
+          img: "auto",
+        },
+        {
+          id: 2023,
+          name: "Cholesterol",
+          nameEn: "cholesterol",
+          formula: "C27H46O",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Součást membrán, prekurzor hormonů a žlučových kyselin.",
+          img: "auto",
+        },
+        {
+          id: 2024,
+          name: "Kortizol",
+          nameEn: "cortisol",
+          formula: "C21H30O5",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Stresový hormon (glukokortikoid).",
+          img: "auto",
+        },
+        {
+          id: 2025,
+          name: "Aldosteron",
+          nameEn: "aldosterone",
+          formula: "C21H28O5",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Regulace solí a krevního tlaku v těle.",
+          img: "auto",
+        },
+        {
+          id: 2026,
+          name: "Testosteron",
+          nameEn: "testosterone",
+          formula: "C19H28O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Mužský pohlavní hormon.",
+          img: "auto",
+        },
+        {
+          id: 2027,
+          name: "Estradiol",
+          nameEn: "estradiol",
+          formula: "C18H24O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Ženský pohlavní hormon (estrogen).",
+          img: "auto",
+        },
+        {
+          id: 2028,
+          name: "Progesteron",
+          nameEn: "progesterone",
+          formula: "C21H30O2",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Ženský pohlavní hormon podporující těhotenství.",
+          img: "auto",
+        },
+        {
+          id: 2029,
+          name: "Kalcitriol",
+          nameEn: "calcitriol",
+          formula: "C27H44O3",
+          group: "Lipidy a steroidy",
+          cat: "biochemie",
+          desc: "Aktivní forma vitamínu D. Zvyšuje vstřebávání vápníku.",
+          img: "auto",
+        },
+        {
+          id: 2030,
+          name: "Glycin",
+          nameEn: "glycine",
+          formula: "C2H5NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Nejjednodušší AMK, součást kolagenu, neurotransmiter.",
+          img: "auto",
+        },
+        {
+          id: 2031,
+          name: "Alanin",
+          nameEn: "alanine",
+          formula: "C3H7NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Přenáší dusík mezi svaly a játry.",
+          img: "auto",
+        },
+        {
+          id: 2032,
+          name: "Valin",
+          nameEn: "valine",
+          formula: "C5H11NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Větvená AMK (BCAA) pro svalovou energii.",
+          img: "auto",
+        },
+        {
+          id: 2033,
+          name: "Leucin",
+          nameEn: "leucine",
+          formula: "C6H13NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Větvená AMK (BCAA) pro svalovou energii.",
+          img: "auto",
+        },
+        {
+          id: 2034,
+          name: "Isoleucin",
+          nameEn: "isoleucine",
+          formula: "C6H13NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Větvená AMK (BCAA) pro svalovou energii.",
+          img: "auto",
+        },
+        {
+          id: 2035,
+          name: "Serin",
+          nameEn: "serine",
+          formula: "C3H7NO3",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Součást fosfolipidů a aktivních míst enzymů.",
+          img: "auto",
+        },
+        {
+          id: 2036,
+          name: "Cystein",
+          nameEn: "cysteine",
+          formula: "C3H7NO2S",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Obsahuje síru, tvoří disulfidické můstky u proteinů.",
+          img: "auto",
+        },
+        {
+          id: 2037,
+          name: "Methionin",
+          nameEn: "methionine",
+          formula: "C5H11NO2S",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Startovní AMK při syntéze bílkovin.",
+          img: "auto",
+        },
+        {
+          id: 2038,
+          name: "Kyselina glutamová",
+          nameEn: "glutamic acid",
+          formula: "C5H9NO4",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Hlavní excitační neurotransmiter v mozku.",
+          img: "auto",
+        },
+        {
+          id: 2039,
+          name: "Arginin",
+          nameEn: "arginine",
+          formula: "C6H14N4O2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Zdroj oxidu dusnatého (zajišťuje vasodilataci).",
+          img: "auto",
+        },
+        {
+          id: 2040,
+          name: "Tryptofan",
+          nameEn: "tryptophan",
+          formula: "C11H12N2O2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Prekurzor serotoninu (hormon štěstí) a melatoninu.",
+          img: "auto",
+        },
+        {
+          id: 2041,
+          name: "Fenylalanin",
+          nameEn: "phenylalanine",
+          formula: "C9H11NO2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Esenciální aminokyselina, prekurzor tyrosinu.",
+          img: "auto",
+        },
+        {
+          id: 2042,
+          name: "Histidin",
+          nameEn: "histidine",
+          formula: "C6H9N3O2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Stavební AMK, tvoří se z ní histamin.",
+          img: "auto",
+        },
+        {
+          id: 2043,
+          name: "Lysin",
+          nameEn: "lysine",
+          formula: "C6H14N2O2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Esenciální aminokyselina důležitá pro vápník a kolagen.",
+          img: "auto",
+        },
+        {
+          id: 2044,
+          name: "Kyselina asparagová",
+          nameEn: "aspartic acid",
+          formula: "C4H7NO4",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Základní stavební aminokyselina a neurotransmiter.",
+          img: "auto",
+        },
+        {
+          id: 2045,
+          name: "Glutathion",
+          nameEn: "glutathione",
+          formula: "C10H17N3O6S",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Tripeptid. Klíčový buněčný antioxidant.",
+          img: "auto",
+        },
+        {
+          id: 2046,
+          name: "Oxytocin",
+          nameEn: "oxytocin",
+          formula: "C43H66N12O12S2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Hormon kontrakce dělohy a sociální vazby.",
+          img: "auto",
+        },
+        {
+          id: 2047,
+          name: "Vasopresin",
+          nameEn: "vasopressin",
+          formula: "C46H65N15O12S2",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Antidiuretický hormon, reguluje vodu v těle.",
+          img: "auto",
+        },
+        {
+          id: 2048,
+          name: "Inzulin",
+          nameEn: "insulin",
+          formula: "Proteinový hormon",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Reguluje hladinu glukózy (glykémii) v krvi.",
+          img: "auto",
+        },
+        {
+          id: 2049,
+          name: "Hemoglobin",
+          nameEn: "hemoglobin",
+          formula: "Globulární protein",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Obsahuje hem pro přenos kyslíku v krvi.",
+          img: "auto",
+        },
+        {
+          id: 2050,
+          name: "Kolagen",
+          nameEn: "collagen",
+          formula: "Fibrilární protein",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Vláknitý protein, základ pojivových tkání.",
+          img: "auto",
+        },
+        {
+          id: 2051,
+          name: "Adrenalin",
+          nameEn: "epinephrine",
+          formula: "C9H13NO3",
+          group: "Aminokyseliny a proteiny",
+          cat: "biochemie",
+          desc: "Tyrosinový derivát, stresový hormon.",
+          img: "auto",
+        },
+        {
+          id: 2052,
+          name: "Adenin",
+          nameEn: "adenine",
+          formula: "C5H5N5",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Purinová báze. Váže se s thyminem (DNA) nebo uracilem (RNA).",
+          img: "auto",
+        },
+        {
+          id: 2053,
+          name: "Guanin",
+          nameEn: "guanine",
+          formula: "C5H5N5O",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Purinová báze. Komplementární s cytosinem.",
+          img: "auto",
+        },
+        {
+          id: 2054,
+          name: "Cytosin",
+          nameEn: "cytosine",
+          formula: "C4H5N3O",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Pyrimidinová báze. Komplementární s guaninem.",
+          img: "auto",
+        },
+        {
+          id: 2055,
+          name: "Thymin",
+          nameEn: "thymine",
+          formula: "C5H6N2O2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Pyrimidinová báze. Přítomen pouze v DNA.",
+          img: "auto",
+        },
+        {
+          id: 2056,
+          name: "Uracil",
+          nameEn: "uracil",
+          formula: "C4H4N2O2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Pyrimidinová báze. Přítomen pouze v RNA.",
+          img: "auto",
+        },
+        {
+          id: 2057,
+          name: "ATP",
+          nameEn: "adenosine triphosphate",
+          formula: "C10H16N5O13P3",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Adenosintrifosfát. Hlavní energetické platidlo buňky.",
+          img: "auto",
+        },
+        {
+          id: 2058,
+          name: "ADP",
+          nameEn: "adenosine diphosphate",
+          formula: "C10H15N5O10P2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Adenosindifosfát. Produkt odbourávání ATP s nižší energií.",
+          img: "auto",
+        },
+        {
+          id: 2059,
+          name: "AMP",
+          nameEn: "adenosine monophosphate",
+          formula: "C10H14N5O7P",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Adenosinmonofosfát. Produkt odbourávání ATP.",
+          img: "auto",
+        },
+        {
+          id: 2060,
+          name: "NAD+",
+          nameEn: "NAD+",
+          formula: "C21H27N7O14P2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Přenašeč elektronů v dýchacím řetězci a glykolýze.",
+          img: "auto",
+        },
+        {
+          id: 2061,
+          name: "NADH",
+          nameEn: "NADH",
+          formula: "C21H29N7O14P2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Redukovaná forma NAD+.",
+          img: "auto",
+        },
+        {
+          id: 2062,
+          name: "FAD",
+          nameEn: "flavin adenine dinucleotide",
+          formula: "C27H33N9O15P2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Koenzym pro oxidoredukční děje (Krebsův cyklus).",
+          img: "auto",
+        },
+        {
+          id: 2063,
+          name: "FADH2",
+          nameEn: "1,5-dihydro-FAD",
+          formula: "C27H35N9O15P2",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Redukovaná forma FAD nesoucí elektrony.",
+          img: "auto",
+        },
+        {
+          id: 2064,
+          name: "Koenzym A (CoA)",
+          nameEn: "coenzyme A",
+          formula: "C21H36N7O16P3S",
+          group: "Nukleové kyseliny a koenzymy",
+          cat: "biochemie",
+          desc: "Přenáší acetylové zbytky (Acetyl-CoA).",
+          img: "auto",
+        },
+      ];
+
+      // ==========================================
+      // LOGIKA OBRÁZKŮ A APLIKACE
+      // ==========================================
+      function translateToEnglish(czechName) {
+        const dictionary = {
+          chlorid: "chloride",
+          fluorid: "fluoride",
+          bromid: "bromide",
+          jodid: "iodide",
+          síran: "sulfate",
+          siřičitan: "sulfite",
+          dusičnan: "nitrate",
+          dusitan: "nitrite",
+          fosforečnan: "phosphate",
+          uhličitan: "carbonate",
+          hydrogenuhličitan: "bicarbonate",
+          hydroxid: "hydroxide",
+          oxid: "oxide",
+          peroxid: "peroxide",
+          kyanid: "cyanide",
+          manganistan: "permanganate",
+          chlornan: "hypochlorite",
+          sodný: "sodium",
+          draselný: "potassium",
+          vápenatý: "calcium",
+          hořečnatý: "magnesium",
+          stříbrný: "silver",
+          měďnatý: "copper",
+          zinečnatý: "zinc",
+          železnatý: "ferrous",
+          železitý: "ferric",
+          hlinitý: "aluminum",
+          lithný: "lithium",
+          barnatý: "barium",
+          rtuťnatý: "mercuric",
+          kyselina: "acid",
+          boritá: "boric",
+          dusičná: "nitric",
+          fosforečná: "phosphoric",
+          sírová: "sulfuric",
+          chlorovodíková: "hydrochloric",
+          sirovodík: "hydrogen sulfide",
+          amoniak: "ammonia",
+          čpavek: "ammonia",
+          voda: "water",
+        };
+
+        let words = czechName.toLowerCase().split(" ");
+        if (
+          words.length === 2 &&
+          dictionary[words[0]] &&
+          dictionary[words[1]]
+        ) {
+          return `${dictionary[words[1]]} ${dictionary[words[0]]}`;
+        }
+        if (words[0] === "kyselina" && words[1] && dictionary[words[1]]) {
+          return `${dictionary[words[1]]} acid`;
+        }
+        return words.map((w) => dictionary[w] || w).join(" ");
+      }
+
+      function getImgUrl(item) {
+        if (item.img && item.img.startsWith("http")) return item.img;
+        if (
+          item.cat === "inorganika" &&
+          item.formula &&
+          item.formula.length <= 2 &&
+          !item.formula.includes("-") &&
+          !item.formula.includes("+")
+        ) {
+          return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/smiles/${encodeURIComponent("[" + item.formula + "]")}/PNG`;
+        }
+        const searchTerm = (
+          item.nameEn || translateToEnglish(item.name)
+        ).trim();
+        return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(searchTerm)}/PNG`;
+      }
+
+      let searchTimeout, filterTimeout;
+      function debounceSearch(v) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => handleGlobalSearch(v), 150);
+      }
+      function debounceFilter(v, g, c) {
+        clearTimeout(filterTimeout);
+        filterTimeout = setTimeout(() => filterDataManual(v, g, c), 150);
+      }
+
+      function toggleAccordion(header) {
+        const item = header.parentElement;
+        const isActive = item.classList.contains("active");
+
+        if (
+          !isActive &&
+          (item.closest("#inorganic") ||
+            item.closest("#organic") ||
+            item.closest("#biochem"))
+        ) {
+          Array.from(item.parentElement.children).forEach((sib) => {
+            if (
+              sib !== item &&
+              sib.classList.contains("accordion-item") &&
+              sib.classList.contains("active")
+            ) {
+              sib.classList.remove("active");
+              const span = sib.querySelector(
+                ".accordion-header span, .sub-section-title span",
+              );
+              if (span) span.innerText = "+";
+            }
+          });
+        }
+
+        item.classList.toggle("active");
+        const headerSpan = header.querySelector("span");
+        if (headerSpan) {
+          headerSpan.innerText = item.classList.contains("active") ? "−" : "+";
+        }
+      }
+
+      function closeAccordion(btn) {
+        const content = btn.parentElement;
+        const item = content.parentElement;
+        item.classList.remove("active");
+
+        const header = item.querySelector(
+          ".accordion-header, .sub-section-title",
+        );
+        if (header) {
+          const span = header.querySelector("span");
+          if (span) span.innerText = "+";
+          header.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+
+      function showPage(p) {
+        document
+          .querySelectorAll(".page-section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll("nav a")
+          .forEach((a) => a.classList.remove("active"));
+        document.getElementById(p).classList.add("active");
+        document.getElementById("link-" + p).classList.add("active");
+        window.scrollTo(0, 0);
+
+        document.querySelectorAll('input[type="text"]').forEach((input) => {
+          input.value = "";
+        });
+
+        renderGrids();
+      }
+
+      function handleGlobalSearch(v) {
+        const val = v.toLowerCase();
+        if (val.length > 0)
+          document.querySelectorAll("#home .accordion-item").forEach((i) => {
+            i.classList.add("active");
+            const span = i.querySelector("span");
+            if (span) span.innerText = "−";
+          });
+        renderAtlasLists(val);
+      }
+
+      function renderAtlasLists(f = "") {
+        const config = [
+          { cat: "inorganika", target: "list-inorganic" },
+          { cat: "organika", target: "list-organic" },
+          { cat: "biochemie", target: "list-biochem" },
+        ];
+        config.forEach((c) => {
+          const listEl = document.getElementById(c.target);
+          if (!listEl) return;
+          const items = database
+            .filter(
+              (i) =>
+                i.cat === c.cat &&
+                (i.name.toLowerCase().includes(f) ||
+                  i.formula.toLowerCase().includes(f)),
+            )
+            .sort((a, b) => a.name.localeCompare(b.name));
+          listEl.innerHTML = items
+            .map(
+              (i) =>
+                `<div class="atlas-item" onclick="showDetail(${i.id})"><span>${i.name}</span><small>${i.formula}</small></div>`,
+            )
+            .join("");
+        });
+      }
+
+      function renderGrids() {
+        const inorgAcc = document.querySelector(
+          "#inorganic .full-width-accordion-wrapper",
+        );
+        const orgAcc = document.querySelector(
+          "#organic .full-width-accordion-wrapper",
+        );
+        const bioAcc = document.querySelector(
+          "#biochem .full-width-accordion-wrapper",
+        );
+        const inorgGrid = document.getElementById("inorganicGrid");
+        const orgGrid = document.getElementById("organicGrid");
+        const bioGrid = document.getElementById("biochemGrid");
+
+        if (inorgAcc) inorgAcc.style.display = "flex";
+        if (orgAcc) orgAcc.style.display = "flex";
+        if (bioAcc) bioAcc.style.display = "flex";
+        if (inorgGrid) inorgGrid.style.display = "none";
+        if (orgGrid) orgGrid.style.display = "none";
+        if (bioGrid) bioGrid.style.display = "none";
+
+        // --- ANORGANIKA ---
+        const inorg = database.filter((i) => i.cat === "inorganika");
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("s-prvky")),
+          "grid-elements-s",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("p-prvky")),
+          "grid-elements-p",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("d-prvky")),
+          "grid-elements-d",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("f-prvky")),
+          "grid-elements-f",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("anion")),
+          "grid-compounds-anionty",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("kysel")),
+          "grid-compounds-kyseliny",
+        );
+        renderList(
+          inorg.filter(
+            (i) =>
+              i.group.toLowerCase().includes("zásad") ||
+              i.group.toLowerCase().includes("zasad"),
+          ),
+          "grid-compounds-zasady",
+        );
+        renderList(
+          inorg.filter((i) => i.group.toLowerCase().includes("sol")),
+          "grid-compounds-soli",
+        );
+        renderList(
+          inorg.filter(
+            (i) =>
+              !i.group.toLowerCase().includes("prvky") &&
+              !["anion", "kysel", "zasad", "zásad", "sol"].some((term) =>
+                i.group.toLowerCase().includes(term),
+              ),
+          ),
+          "grid-compounds-ostatni",
+        );
+
+        // --- ORGANIKA ---
+        const org = database.filter((i) => i.cat === "organika");
+        renderList(
+          org.filter((i) => i.group === "Uhlovodíky"),
+          "grid-org-uhlovodiky",
+        );
+        renderList(
+          org.filter((i) => i.group === "Deriváty"),
+          "grid-org-derivaty",
+        );
+        renderList(
+          org.filter((i) => i.group === "Kyslíkaté deriváty"),
+          "grid-org-kyslikate",
+        );
+        renderList(
+          org.filter((i) => i.group === "Karbonylové sloučeniny"),
+          "grid-org-karbonylove",
+        );
+        renderList(
+          org.filter((i) => i.group === "Karboxylové kyseliny a deriváty"),
+          "grid-org-karboxylove",
+        );
+        renderList(
+          org.filter((i) => i.group === "Alkaloidy a polymery"),
+          "grid-org-alkaloidy",
+        );
+
+        // --- BIOCHEMIE ---
+        const bio = database.filter((i) => i.cat === "biochemie");
+        renderList(
+          bio.filter((i) => i.group === "Sacharidy"),
+          "grid-bio-sacharidy",
+        );
+        renderList(
+          bio.filter((i) => i.group === "Lipidy a steroidy"),
+          "grid-bio-lipidy",
+        );
+        renderList(
+          bio.filter((i) => i.group === "Aminokyseliny a proteiny"),
+          "grid-bio-proteiny",
+        );
+        renderList(
+          bio.filter((i) => i.group === "Nukleové kyseliny a koenzymy"),
+          "grid-bio-nukleove",
+        );
+
+        renderAtlasLists();
+      }
+
+      function renderList(data, targetId, useGroups = false) {
+        const container = document.getElementById(targetId);
+        if (!container) return;
+
+        if (data.length === 0) {
+          container.innerHTML =
+            "<p style='padding:20px; color:gray;'>Žádné položky v této kategorii.</p>";
+          return;
+        }
+
+        let currentGroup = "";
+        const sortedData = [...data].sort((a, b) =>
+          a.group.localeCompare(b.group),
+        );
+        container.innerHTML = sortedData
+          .map((item) => {
+            let groupHtml =
+              useGroups && item.group !== currentGroup
+                ? `<div class="group-header">${(currentGroup = item.group)}</div>`
+                : "";
+            return `${groupHtml}<div class="card" onclick="showDetail(${item.id})">
+                          <img loading="lazy" src="${getImgUrl(item)}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/300/f1f3f5/1a73e8?text=${item.formula}'">
+                          <h3>${item.name}</h3><div class="formula">${item.formula}</div></div>`;
+          })
+          .join("");
+      }
+
+      function filterDataManual(v, g, c) {
+        const searchTerm = v.trim().toLowerCase();
+        const filtered = database.filter(
+          (i) =>
+            i.cat === c &&
+            (i.name.toLowerCase().includes(searchTerm) ||
+              i.formula.toLowerCase().includes(searchTerm)),
+        );
+
+        const sectionId =
+          c === "inorganika"
+            ? "inorganic"
+            : c === "organika"
+              ? "organic"
+              : "biochem";
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+
+        const accordionWrapper = section.querySelector(
+          ".full-width-accordion-wrapper",
+        );
+        const flatGrid = document.getElementById(g);
+
+        if (searchTerm.length > 0) {
+          if (accordionWrapper) accordionWrapper.style.display = "none";
+          if (flatGrid) {
+            flatGrid.style.display = "grid";
+            renderList(filtered, g, true);
+          }
+        } else {
+          if (accordionWrapper) accordionWrapper.style.display = "flex";
+          if (flatGrid) flatGrid.style.display = "none";
+
+          if (c === "inorganika") {
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("s-prvky")),
+              "grid-elements-s",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("p-prvky")),
+              "grid-elements-p",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("d-prvky")),
+              "grid-elements-d",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("f-prvky")),
+              "grid-elements-f",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("anion")),
+              "grid-compounds-anionty",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("kysel")),
+              "grid-compounds-kyseliny",
+            );
+            renderList(
+              filtered.filter(
+                (i) =>
+                  i.group.toLowerCase().includes("zásad") ||
+                  i.group.toLowerCase().includes("zasad"),
+              ),
+              "grid-compounds-zasady",
+            );
+            renderList(
+              filtered.filter((i) => i.group.toLowerCase().includes("sol")),
+              "grid-compounds-soli",
+            );
+            renderList(
+              filtered.filter(
+                (i) =>
+                  !i.group.toLowerCase().includes("prvky") &&
+                  !["anion", "kysel", "zasad", "zásad", "sol"].some((term) =>
+                    i.group.toLowerCase().includes(term),
+                  ),
+              ),
+              "grid-compounds-ostatni",
+            );
+          } else if (c === "organika") {
+            renderList(
+              filtered.filter((i) => i.group === "Uhlovodíky"),
+              "grid-org-uhlovodiky",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Deriváty"),
+              "grid-org-derivaty",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Kyslíkaté deriváty"),
+              "grid-org-kyslikate",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Karbonylové sloučeniny"),
+              "grid-org-karbonylove",
+            );
+            renderList(
+              filtered.filter(
+                (i) => i.group === "Karboxylové kyseliny a deriváty",
+              ),
+              "grid-org-karboxylove",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Alkaloidy a polymery"),
+              "grid-org-alkaloidy",
+            );
+          } else if (c === "biochemie") {
+            renderList(
+              filtered.filter((i) => i.group === "Sacharidy"),
+              "grid-bio-sacharidy",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Lipidy a steroidy"),
+              "grid-bio-lipidy",
+            );
+            renderList(
+              filtered.filter((i) => i.group === "Aminokyseliny a proteiny"),
+              "grid-bio-proteiny",
+            );
+            renderList(
+              filtered.filter(
+                (i) => i.group === "Nukleové kyseliny a koenzymy",
+              ),
+              "grid-bio-nukleove",
+            );
+          }
+        }
+      }
+
+      function showDetail(id) {
+        const item = database.find((i) => i.id === id);
+        const modal = document.getElementById("detailModal");
+        document.getElementById("modalBody").innerHTML = `
+                      <img src="${getImgUrl(item)}" onerror="this.src='https://via.placeholder.com/500/f1f3f5/1a73e8?text=${item.formula}'">
+                      <h2 style="color:var(--primary); margin:0; text-align:center; font-size:2rem;">${item.name}</h2>
+                      <div style="font-weight:bold; margin-bottom:20px; font-size:1.8rem; text-align:center; color:var(--text-light);">${item.formula}</div>
+                      <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                      <p style="font-size:1.1rem;"><strong>Kategorie:</strong> ${item.cat.toUpperCase()} | <strong>Skupina:</strong> ${item.group}</p>
+                      <div style="background:#f8f9fa; padding:25px; border-radius:15px; font-size:1.1rem; border:1px solid #eee; line-height:1.7;">${item.desc}</div>
+                      <button onclick="closeModal()" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:15px; margin-top:25px; cursor:pointer; font-weight:bold; font-size:1.1rem;">Zavřít</button>`;
+        modal.style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
+
+      // FUNKCE PRO PROCVIČOVÁNÍ
+      function showPractice(type) {
+        const container = document.getElementById("practiceContainer");
+        if (type === "biochem") {
+          container.innerHTML =
+            '<iframe src="https://quizlet.com/1160902391/flashcards/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
+        } else if (type === "organic") {
+          container.innerHTML =
+            '<iframe src="https://quizlet.com/1160912337/flashcards/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
+        } else if (type === "inorganic") {
+          container.innerHTML =
+            '<iframe src="https://quizlet.com/1160912337/flashcards/embed?i=2nph8c&x=1jj1" height="650" width="100%" style="border:0;"></iframe>';
+        }
+      }
+
+      window.onclick = (e) => {
+        if (e.target == document.getElementById("detailModal")) closeModal();
+      };
+      window.onload = renderGrids;
+    </script>
+  </body>
+</html>
