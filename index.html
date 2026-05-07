@@ -4643,11 +4643,14 @@
 
       // =========================================
       // ⬆️ KONEC TVÉ DATABÁZE ⬆️
-      database.forEach((item) => {
+     // ==========================================
+      // 2. OPRAVA ID A PŘIŘAZENÍ KATEGORIÍ
+      // ==========================================
+      database.forEach(item => {
         if (!item.cat) {
-          if (item.id.startsWith("i")) item.cat = "inorganika";
-          else if (item.id.startsWith("o")) item.cat = "organika";
-          else if (item.id.startsWith("b")) item.cat = "biochemie";
+          if (item.id.startsWith('i')) item.cat = 'inorganika';
+          else if (item.id.startsWith('o')) item.cat = 'organika';
+          else if (item.id.startsWith('b')) item.cat = 'biochemie';
         }
       });
 
@@ -4656,8 +4659,7 @@
       // ==========================================
       function getImgUrl(item) {
         if (item.img && item.img !== "auto") return item.img;
-        if (item.nameEn)
-          return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(item.nameEn)}/PNG`;
+        if (item.nameEn) return `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(item.nameEn)}/PNG`;
         return `https://via.placeholder.com/300/f1f3f5/1a73e8?text=${encodeURIComponent(item.formula || item.name)}`;
       }
 
@@ -4670,7 +4672,7 @@
           <div class="card" onclick="showDetail('${item.id}')" style="display: flex; flex-direction: column; text-align: center; padding: 25px;">
             <img loading="lazy" src="${getImgUrl(item)}" alt="${item.name}" onerror="this.src='${getFallbackImg(item)}'" style="height: 160px; object-fit: contain; margin-bottom: 15px;">
             <h3 style="margin: 0 0 5px; font-size: 1.4rem;">${item.name}</h3>
-            ${item.nameEn ? `<div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 10px;">${item.nameEn}</div>` : ""}
+            ${item.nameEn ? `<div style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 10px;">${item.nameEn}</div>` : ''}
             <div class="formula" style="color:var(--primary); font-weight:bold; font-size: 1.3rem; margin-bottom: 5px;">${item.formula || ""}</div>
           </div>`;
       }
@@ -4692,22 +4694,11 @@
         const item = header.parentElement;
         const isActive = item.classList.contains("active");
 
-        if (
-          !isActive &&
-          (item.closest("#inorganic") ||
-            item.closest("#organic") ||
-            item.closest("#biochem"))
-        ) {
+        if (!isActive && (item.closest("#inorganic") || item.closest("#organic") || item.closest("#biochem"))) {
           Array.from(item.parentElement.children).forEach((sib) => {
-            if (
-              sib !== item &&
-              sib.classList.contains("accordion-item") &&
-              sib.classList.contains("active")
-            ) {
+            if (sib !== item && sib.classList.contains("accordion-item") && sib.classList.contains("active")) {
               sib.classList.remove("active");
-              const span = sib.querySelector(
-                ".accordion-header span, .sub-section-title span",
-              );
+              const span = sib.querySelector(".accordion-header span, .sub-section-title span");
               if (span) span.innerText = "+";
             }
           });
@@ -4715,17 +4706,14 @@
 
         item.classList.toggle("active");
         const headerSpan = header.querySelector("span");
-        if (headerSpan)
-          headerSpan.innerText = item.classList.contains("active") ? "−" : "+";
+        if (headerSpan) headerSpan.innerText = item.classList.contains("active") ? "−" : "+";
       }
 
       function closeAccordion(btn) {
         const content = btn.parentElement;
         const item = content.parentElement;
         item.classList.remove("active");
-        const header = item.querySelector(
-          ".accordion-header, .sub-section-title",
-        );
+        const header = item.querySelector(".accordion-header, .sub-section-title");
         if (header) {
           const span = header.querySelector("span");
           if (span) span.innerText = "+";
@@ -4734,19 +4722,13 @@
       }
 
       function showPage(p) {
-        document
-          .querySelectorAll(".page-section")
-          .forEach((s) => s.classList.remove("active"));
-        document
-          .querySelectorAll("nav a")
-          .forEach((a) => a.classList.remove("active"));
+        document.querySelectorAll(".page-section").forEach((s) => s.classList.remove("active"));
+        document.querySelectorAll("nav a").forEach((a) => a.classList.remove("active"));
         document.getElementById(p).classList.add("active");
         document.getElementById("link-" + p).classList.add("active");
         window.scrollTo(0, 0);
 
-        document.querySelectorAll('input[type="text"]').forEach((input) => {
-          input.value = "";
-        });
+        document.querySelectorAll('input[type="text"]').forEach((input) => { input.value = ""; });
         renderGrids();
       }
 
@@ -4756,15 +4738,13 @@
       function handleGlobalSearch(v) {
         const val = v.toLowerCase();
         renderAtlasLists(val);
-
+        
         document.querySelectorAll("#home .accordion-item").forEach((i) => {
           const span = i.querySelector(".accordion-header span");
           if (val.length === 0) {
-            // Zavřeno defaultně, když není nic vyhledáno
             i.classList.remove("active");
             if (span) span.innerText = "+";
           } else {
-            // Při hledání se automaticky rozbalí ty skupiny, které obsahují výsledek a nejsou skryté
             if (i.style.display !== "none") {
               i.classList.add("active");
               if (span) span.innerText = "−";
@@ -4782,38 +4762,28 @@
         config.forEach((c) => {
           const listEl = document.getElementById(c.target);
           if (!listEl) return;
-
-          listEl.className = "atlas-list";
+          
+          listEl.className = "atlas-list"; 
 
           const items = database
-            .filter(
-              (i) =>
-                i.cat === c.cat &&
-                (i.name.toLowerCase().includes(f) ||
-                  (i.formula && i.formula.toLowerCase().includes(f))),
-            )
+            .filter((i) => i.cat === c.cat && (i.name.toLowerCase().includes(f) || (i.formula && i.formula.toLowerCase().includes(f))))
             .sort((a, b) => (a.group || "").localeCompare(b.group || ""));
-
-          const accordionItem = listEl.closest(".accordion-item");
+            
+          const accordionItem = listEl.closest('.accordion-item');
 
           if (items.length === 0) {
-            listEl.innerHTML = "";
-            if (f !== "" && accordionItem) {
-              accordionItem.style.display = "none"; // Schová celou kategorii, pokud v ní hledaná látka není
-            } else if (accordionItem) {
-              accordionItem.style.display = "block";
-              listEl.innerHTML =
-                "<p style='color:gray; padding: 15px;'>V této sekci zatím nejsou žádné látky.</p>";
-            }
+             listEl.innerHTML = "";
+             if (f !== "" && accordionItem) {
+               accordionItem.style.display = "none";
+             } else if (accordionItem) {
+               accordionItem.style.display = "block"; 
+               listEl.innerHTML = "<p style='color:gray; padding: 15px;'>V této sekci zatím nejsou žádné látky.</p>";
+             }
           } else {
-            if (accordionItem) accordionItem.style.display = "block"; // Zobrazí skupinu, protože obsahuje látku
-            // Vykreslí čistě jen jméno látky
-            listEl.innerHTML = items
-              .map(
-                (i) =>
-                  `<div class="atlas-item" onclick="showDetail('${i.id}')"><strong style="font-size:1.1rem; padding: 5px 0;">${i.name}</strong></div>`,
-              )
-              .join("");
+             if (accordionItem) accordionItem.style.display = "block";
+             listEl.innerHTML = items
+               .map((i) => `<div class="atlas-item" onclick="showDetail('${i.id}')"><strong style="font-size:1.1rem; padding: 5px 0;">${i.name}</strong></div>`)
+               .join("");
           }
         });
       }
@@ -4822,15 +4792,9 @@
       // 6. RENDER MŘÍŽEK
       // ==========================================
       function renderGrids() {
-        const inorgAcc = document.querySelector(
-          "#inorganic .full-width-accordion-wrapper",
-        );
-        const orgAcc = document.querySelector(
-          "#organic .full-width-accordion-wrapper",
-        );
-        const bioAcc = document.querySelector(
-          "#biochem .full-width-accordion-wrapper",
-        );
+        const inorgAcc = document.querySelector("#inorganic .full-width-accordion-wrapper");
+        const orgAcc = document.querySelector("#organic .full-width-accordion-wrapper");
+        const bioAcc = document.querySelector("#biochem .full-width-accordion-wrapper");
         const inorgGrid = document.getElementById("inorganicGrid");
         const orgGrid = document.getElementById("organicGrid");
         const bioGrid = document.getElementById("biochemGrid");
@@ -4844,104 +4808,35 @@
 
         // --- ANORGANIKA ---
         const inorg = database.filter((i) => i.cat === "inorganika");
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("s-prvk")),
-          "grid-elements-s",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("p-prvk")),
-          "grid-elements-p",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("d-prvk")),
-          "grid-elements-d",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("f-prvk")),
-          "grid-elements-f",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("anion")),
-          "grid-compounds-anionty",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("kysel")),
-          "grid-compounds-kyseliny",
-        );
-        renderList(
-          inorg.filter(
-            (i) =>
-              (i.group || "").toLowerCase().includes("zásad") ||
-              (i.group || "").toLowerCase().includes("zasad"),
-          ),
-          "grid-compounds-zasady",
-        );
-        renderList(
-          inorg.filter((i) => (i.group || "").toLowerCase().includes("sol")),
-          "grid-compounds-soli",
-        );
-        renderList(
-          inorg.filter((i) => {
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("s-prvk")), "grid-elements-s");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("p-prvk")), "grid-elements-p");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("d-prvk")), "grid-elements-d");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("f-prvk")), "grid-elements-f");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("anion")), "grid-compounds-anionty");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("kysel")), "grid-compounds-kyseliny");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("zásad") || (i.group || "").toLowerCase().includes("zasad")), "grid-compounds-zasady");
+        renderList(inorg.filter((i) => (i.group || "").toLowerCase().includes("sol")), "grid-compounds-soli");
+        renderList(inorg.filter((i) => {
             const g = (i.group || "").toLowerCase();
-            return (
-              !g.includes("prvk") &&
-              !["anion", "kysel", "zasad", "zásad", "sol"].some((t) =>
-                g.includes(t),
-              )
-            );
-          }),
-          "grid-compounds-ostatni",
-        );
+            return !g.includes("prvk") && !["anion", "kysel", "zasad", "zásad", "sol"].some(t => g.includes(t));
+        }), "grid-compounds-ostatni");
 
         // --- ORGANIKA ---
         const org = database.filter((i) => i.cat === "organika");
-        renderList(
-          org.filter((i) => i.group === "Uhlovodíky"),
-          "grid-org-uhlovodiky",
-        );
-        renderList(
-          org.filter((i) => i.group === "Deriváty"),
-          "grid-org-derivaty",
-        );
-        renderList(
-          org.filter((i) => i.group === "Kyslíkaté deriváty"),
-          "grid-org-kyslikate",
-        );
-        renderList(
-          org.filter((i) => i.group === "Karbonylové sloučeniny"),
-          "grid-org-karbonylove",
-        );
-        renderList(
-          org.filter((i) => i.group === "Karboxyly"),
-          "grid-org-karboxylove",
-        );
-        renderList(
-          org.filter((i) => i.group === "Alkaloidy a polymery"),
-          "grid-org-alkaloidy",
-        );
+        renderList(org.filter((i) => i.group === "Uhlovodíky"), "grid-org-uhlovodiky");
+        renderList(org.filter((i) => i.group === "Deriváty"), "grid-org-derivaty");
+        renderList(org.filter((i) => i.group === "Kyslíkaté deriváty"), "grid-org-kyslikate");
+        renderList(org.filter((i) => i.group === "Karbonylové sloučeniny"), "grid-org-karbonylove");
+        renderList(org.filter((i) => i.group === "Karboxyly"), "grid-org-karboxylove"); 
+        renderList(org.filter((i) => i.group === "Alkaloidy a polymery"), "grid-org-alkaloidy");
 
         // --- BIOCHEMIE ---
         const bio = database.filter((i) => i.cat === "biochemie");
-        renderList(
-          bio.filter((i) => i.group === "Sacharidy"),
-          "grid-bio-sacharidy",
-        );
-        renderList(
-          bio.filter(
-            (i) => i.group === "Lipidy a steroidy" || i.group === "Lipidy",
-          ),
-          "grid-bio-lipidy",
-        );
-        renderList(
-          bio.filter((i) => i.group === "AMK a proteiny"),
-          "grid-bio-proteiny",
-        );
-        renderList(
-          bio.filter((i) => i.group === "Nukleové kys. a koenzymy"),
-          "grid-bio-nukleove",
-        );
+        renderList(bio.filter((i) => i.group === "Sacharidy"), "grid-bio-sacharidy");
+        renderList(bio.filter((i) => i.group === "Lipidy a steroidy" || i.group === "Lipidy"), "grid-bio-lipidy");
+        renderList(bio.filter((i) => i.group === "AMK a proteiny"), "grid-bio-proteiny"); 
+        renderList(bio.filter((i) => i.group === "Nukleové kys. a koenzymy"), "grid-bio-nukleove"); 
 
-        // Tímto zavoláme inicializaci domovské stránky (vše se defaultně zavře)
         handleGlobalSearch("");
       }
 
@@ -4950,19 +4845,15 @@
         if (!container) return;
 
         if (data.length === 0) {
-          container.innerHTML =
-            "<p style='padding:20px; color:gray;'>Žádné položky v této kategorii.</p>";
+          container.innerHTML = "<p style='padding:20px; color:gray;'>Žádné položky v této kategorii.</p>";
           return;
         }
 
         let currentGroup = "";
-        const sortedData = [...data].sort((a, b) =>
-          (a.group || "").localeCompare(b.group || ""),
-        );
+        const sortedData = [...data].sort((a, b) => (a.group || "").localeCompare(b.group || ""));
         container.innerHTML = sortedData
           .map((item) => {
-            let groupHtml =
-              useGroups && item.group !== currentGroup
+            let groupHtml = useGroups && item.group !== currentGroup
                 ? `<div class="group-header" style="grid-column: 1 / -1; margin: 20px 0 10px; font-size: 1.3rem; color: var(--primary); border-bottom: 2px solid var(--border); padding-bottom: 5px;">${(currentGroup = item.group).toUpperCase()}</div>`
                 : "";
             return groupHtml + createCardHtml(item);
@@ -4972,25 +4863,13 @@
 
       function filterDataManual(v, g, c) {
         const searchTerm = v.trim().toLowerCase();
-        const filtered = database.filter(
-          (i) =>
-            i.cat === c &&
-            (i.name.toLowerCase().includes(searchTerm) ||
-              (i.formula && i.formula.toLowerCase().includes(searchTerm))),
-        );
+        const filtered = database.filter((i) => i.cat === c && (i.name.toLowerCase().includes(searchTerm) || (i.formula && i.formula.toLowerCase().includes(searchTerm))));
 
-        const sectionId =
-          c === "inorganika"
-            ? "inorganic"
-            : c === "organika"
-              ? "organic"
-              : "biochem";
+        const sectionId = c === "inorganika" ? "inorganic" : c === "organika" ? "organic" : "biochem";
         const section = document.getElementById(sectionId);
         if (!section) return;
 
-        const accordionWrapper = section.querySelector(
-          ".full-width-accordion-wrapper",
-        );
+        const accordionWrapper = section.querySelector(".full-width-accordion-wrapper");
         const flatGrid = document.getElementById(g);
 
         if (searchTerm.length > 0) {
@@ -5002,7 +4881,7 @@
         } else {
           if (accordionWrapper) accordionWrapper.style.display = "flex";
           if (flatGrid) flatGrid.style.display = "none";
-          renderGrids();
+          renderGrids(); 
         }
       }
 
@@ -5041,42 +4920,17 @@
       let currentCardIndex = 0;
 
       const subcategoryMap = {
-        inorganika: [
-          "s-prvky",
-          "p-prvky",
-          "d-prvky",
-          "f-prvky",
-          "Anionty",
-          "Kyseliny",
-          "Zásady",
-          "Soli",
-          "Ostatní sloučeniny",
-        ],
-        organika: [
-          "Uhlovodíky",
-          "Deriváty",
-          "Kyslíkaté deriváty",
-          "Karbonylové sloučeniny",
-          "Karboxyly",
-          "Alkaloidy a polymery",
-        ],
-        biochemie: [
-          "Sacharidy",
-          "Lipidy a steroidy",
-          "AMK a proteiny",
-          "Nukleové kys. a koenzymy",
-        ],
+        inorganika: ["s-prvky", "p-prvky", "d-prvky", "f-prvky", "Anionty", "Kyseliny", "Zásady", "Soli", "Ostatní sloučeniny"],
+        organika: ["Uhlovodíky", "Deriváty", "Kyslíkaté deriváty", "Karbonylové sloučeniny", "Karboxyly", "Alkaloidy a polymery"],
+        biochemie: ["Sacharidy", "Lipidy a steroidy", "AMK a proteiny", "Nukleové kys. a koenzymy"]
       };
 
       function updateSubcategories() {
         const cat = document.getElementById("cat-select").value;
         const subSelect = document.getElementById("subcat-select");
-        subSelect.innerHTML =
-          '<option value="all">Vše z vybraného okruhu</option>';
+        subSelect.innerHTML = '<option value="all">Vše z vybraného okruhu</option>';
         if (subcategoryMap[cat]) {
-          subcategoryMap[cat].forEach((sub) => {
-            subSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
-          });
+          subcategoryMap[cat].forEach(sub => { subSelect.innerHTML += `<option value="${sub}">${sub}</option>`; });
         }
       }
 
@@ -5091,12 +4945,12 @@
         const cat = document.getElementById("cat-select").value;
         const subcat = document.getElementById("subcat-select").value;
 
-        practiceCards = database.filter((item) => {
+        practiceCards = database.filter(item => {
           let matchCat = true;
-          if (cat !== "all") matchCat = item.cat === cat;
-
+          if (cat !== "all") matchCat = (item.cat === cat);
+          
           let matchSubcat = true;
-          if (subcat !== "all") matchSubcat = item.group === subcat;
+          if (subcat !== "all") matchSubcat = (item.group === subcat); 
           return matchCat && matchSubcat;
         });
 
@@ -5128,68 +4982,69 @@
 
         const imgEl = document.getElementById("fc-img");
         imgEl.src = getImgUrl(item);
-        imgEl.onerror = function () {
-          this.onerror = null;
-          this.src = getFallbackImg(item);
-        };
-
-        document.getElementById("fc-group").innerText = item.group
-          ? `${item.group}`
-          : "";
-        document.getElementById("fc-desc").innerText = item.desc
-          ? item.desc
-          : "";
+        imgEl.onerror = function() { this.onerror=null; this.src=getFallbackImg(item); };
+        
+        document.getElementById("fc-group").innerText = item.group ? `${item.group}` : "";
+        document.getElementById("fc-desc").innerText = item.desc ? item.desc : "";
 
         document.getElementById("fc-name").innerText = item.name;
-        document.getElementById("fc-nameEn").innerText = item.nameEn
-          ? `(${item.nameEn})`
-          : "";
-        document.getElementById("fc-formula").innerText = item.formula
-          ? item.formula
-          : "";
-        document.getElementById("fc-oxi").innerText =
-          item.oxidationStates && item.oxidationStates !== "N/A"
-            ? `Oxidační čísla: ${item.oxidationStates}`
-            : "";
-        document.getElementById("fc-med").innerText =
-          item.medicalUse && item.medicalUse !== "N/A"
-            ? `Využití: ${item.medicalUse}`
-            : "";
+        document.getElementById("fc-nameEn").innerText = item.nameEn ? `(${item.nameEn})` : "";
+        document.getElementById("fc-formula").innerText = item.formula ? item.formula : "";
+        document.getElementById("fc-oxi").innerText = (item.oxidationStates && item.oxidationStates !== "N/A") ? `Oxidační čísla: ${item.oxidationStates}` : "";
+        document.getElementById("fc-med").innerText = (item.medicalUse && item.medicalUse !== "N/A") ? `Využití: ${item.medicalUse}` : "";
 
-        document.getElementById("fc-prev").disabled = currentCardIndex === 0;
-        document.getElementById("fc-next").disabled =
-          currentCardIndex === practiceCards.length - 1;
+        document.getElementById("fc-prev").disabled = (currentCardIndex === 0);
+        document.getElementById("fc-next").disabled = (currentCardIndex === practiceCards.length - 1);
       }
 
-      function flipCard() {
-        document
-          .getElementById("active-flashcard")
-          .classList.toggle("is-flipped");
-      }
-      function nextCard() {
-        if (currentCardIndex < practiceCards.length - 1) {
-          currentCardIndex++;
-          document
-            .getElementById("active-flashcard")
-            .classList.remove("is-flipped");
-          setTimeout(showCard, 200);
-        }
-      }
-      function prevCard() {
-        if (currentCardIndex > 0) {
-          currentCardIndex--;
-          document
-            .getElementById("active-flashcard")
-            .classList.remove("is-flipped");
-          setTimeout(showCard, 200);
+      function flipCard() { document.getElementById("active-flashcard").classList.toggle("is-flipped"); }
+      function nextCard() { if (currentCardIndex < practiceCards.length - 1) { currentCardIndex++; document.getElementById("active-flashcard").classList.remove("is-flipped"); setTimeout(showCard, 200); } }
+      function prevCard() { if (currentCardIndex > 0) { currentCardIndex--; document.getElementById("active-flashcard").classList.remove("is-flipped"); setTimeout(showCard, 200); } }
+
+      // ==========================================
+      // 9. SWIPE LOGIKA PRO MOBILY (KARTIČKY)
+      // ==========================================
+      let touchstartX = 0;
+      let touchendX = 0;
+      let touchstartY = 0;
+      let touchendY = 0;
+
+      function handleGesture() {
+        const diffX = touchendX - touchstartX;
+        const diffY = touchendY - touchstartY;
+        
+        // Zkontrolujeme, zda je pohyb horizontální (a ne vertikální scrollování) a dostatečně dlouhý (>40px)
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+          if (diffX < 0) {
+            nextCard(); // Swipe doleva -> Další
+          } else {
+            prevCard(); // Swipe doprava -> Předchozí
+          }
         }
       }
 
       // Inicializace stránky po načtení
-      window.onclick = (e) => {
-        if (e.target == document.getElementById("detailModal")) closeModal();
+      window.onclick = (e) => { if (e.target == document.getElementById("detailModal")) closeModal(); };
+      
+      window.onload = () => {
+        renderGrids();
+        
+        // Přidání posluchačů pro swipe na kartičku
+        const flashcardArea = document.getElementById("active-flashcard");
+        if(flashcardArea) {
+          flashcardArea.addEventListener('touchstart', e => {
+            touchstartX = e.changedTouches[0].screenX;
+            touchstartY = e.changedTouches[0].screenY;
+          }, {passive: true});
+          
+          flashcardArea.addEventListener('touchend', e => {
+            touchendX = e.changedTouches[0].screenX;
+            touchendY = e.changedTouches[0].screenY;
+            handleGesture();
+          }, {passive: true});
+        }
       };
-      window.onload = renderGrids;
+    </script>
     </script>
   </body>
 </html>
